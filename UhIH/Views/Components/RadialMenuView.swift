@@ -7,10 +7,11 @@ struct RadialMenuView: View {
     
     // Konfiguracija dugmadi
     let menuItems: [RadialMenuItem] = [
-        RadialMenuItem(icon: "magnifyingglass", color: .blue),
-        RadialMenuItem(icon: "crop", color: .green),
-        RadialMenuItem(icon: "wand.and.stars", color: .purple),
-        RadialMenuItem(icon: "slider.horizontal.3", color: .orange)
+        RadialMenuItem(icon: "minus.magnifyingglass", color: .red),    // Zoom out
+        RadialMenuItem(icon: "plus.magnifyingglass", color: .blue),     // Zoom in
+        RadialMenuItem(icon: "crop", color: .green),                     // Orezivanje
+        RadialMenuItem(icon: "wand.and.stars", color: .purple),         // Magični štapić
+        RadialMenuItem(icon: "slider.horizontal.3", color: .orange)     // Slider za podešavanja
     ]
     
     var body: some View {
@@ -24,7 +25,8 @@ struct RadialMenuView: View {
                         index: index,
                         totalItems: menuItems.count,
                         rotation: rotation,
-                        selectedHand: viewModel.selectedHand ?? .right
+                        selectedHand: viewModel.selectedHand ?? .right,
+                        viewModel: viewModel
                     )
                 }
                 
@@ -48,10 +50,15 @@ struct RadialMenuView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .position(
                 x: viewModel.selectedHand == .right ? geometry.size.width * 0.7 : geometry.size.width * 0.3,
-                y: geometry.size.height * 0.85
+                y: geometry.size.height - 280
             )
+            .onAppear {
+                print("Screen size: \(geometry.size)")
+                print("X position: \(viewModel.selectedHand == .right ? geometry.size.width * 0.7 : geometry.size.width * 0.3)")
+                print("Y position: \(geometry.size.height - 280)")
+                print("Distance from bottom: 280.0")
+            }
         }
-        .frame(height: 200)
     }
 }
 
@@ -70,10 +77,18 @@ struct MenuButton: View {
     let totalItems: Int
     let rotation: Double
     let selectedHand: ContentViewModel.Handedness
+    @ObservedObject var viewModel: ContentViewModel
     
     var body: some View {
         Button(action: {
-            // Akcija za dugme
+            switch item.icon {
+            case "plus.magnifyingglass":
+                viewModel.zoomIn()
+            case "minus.magnifyingglass":
+                viewModel.zoomOut()
+            default:
+                break
+            }
         }) {
             Image(systemName: item.icon)
                 .font(.title3)
