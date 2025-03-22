@@ -11,9 +11,9 @@ struct ContentView: View {
             
             if !viewModel.hasSelectedImage {
                 WelcomeScreenView(viewModel: viewModel)
-            } else if let image = viewModel.selectedImage {
+            } else {
                 ZStack {
-                    ImageDetailView(image: image, viewModel: viewModel)
+                    ImageDetailView(viewModel: viewModel)
                     
                     // Dodajemo RadialMenuView preko ImageDetailView
                     RadialMenuView(viewModel: viewModel)
