@@ -144,10 +144,10 @@ struct MenuButton: View {
         // 180° (π) = levo
         // 270° (3π/2) = dole
         
-        // Za obe ruke koristimo iste uglove (315° do 135°)
-        // Za levoruke ćemo samo zrcaliti x koordinatu
-        let startAngle: CGFloat = .pi*7/4 // 315° (225° + 90°)
-        let endAngle: CGFloat = .pi*3/4 // 135° (45° + 90°)
+        // Za desnoruke: 315° do 45° (270° raspon)
+        // Za levoruke: -45° do -315° (zrcaljenje)
+        let startAngle: CGFloat = selectedHand == .right ? .pi*7/4 : -.pi/4 // 315° ili -45°
+        let endAngle: CGFloat = selectedHand == .right ? .pi/4 : -.pi*7/4 // 45° ili -315°
         
         // Izračunavanje ugla za trenutno dugme
         let angleRange = endAngle - startAngle
