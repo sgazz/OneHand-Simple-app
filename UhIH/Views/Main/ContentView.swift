@@ -12,7 +12,13 @@ struct ContentView: View {
             if !viewModel.hasSelectedImage {
                 WelcomeScreenView(viewModel: viewModel)
             } else if let image = viewModel.selectedImage {
-                ImageDetailView(image: image, viewModel: viewModel)
+                ZStack {
+                    ImageDetailView(image: image, viewModel: viewModel)
+                    
+                    // Dodajemo RadialMenuView preko ImageDetailView
+                    RadialMenuView(viewModel: viewModel)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
         }
         .onChange(of: viewModel.selectedItems) { oldValue, newValue in

@@ -14,11 +14,11 @@ struct ImageDetailView: View {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: geometry.size.width * scale)
+                            .frame(width: geometry.size.width * viewModel.scale)
                             .gesture(
                                 MagnificationGesture()
                                     .onChanged { value in
-                                        scale = value.magnitude
+                                        viewModel.scale = value.magnitude
                                     }
                             )
                     }
