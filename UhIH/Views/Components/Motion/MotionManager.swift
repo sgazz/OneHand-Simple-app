@@ -10,8 +10,16 @@ class MotionManager: ObservableObject {
     @Published var pitch: Double = 0.0  // nagib napred-nazad
     @Published var roll: Double = 0.0   // nagib levo-desno
     
+    // Baseline vrednosti za kalibraciju
+    private var baselinePitch: Double = 0.0
+    private var baselineRoll: Double = 0.0
+    
+    // Mrtva zona (u radijanima)
+    private let deadZone: Double = 0.1 // približno 5.7 stepeni
+    
     // Status praćenja pokreta
     @Published var isTracking: Bool = false
+    @Published var isInDeadZone: Bool = true
     
     // Granice za bounce efekat
     private var bounceThreshold: Double = 0.1
@@ -26,23 +34,47 @@ class MotionManager: ObservableObject {
         motionManager.deviceMotionUpdateInterval = updateInterval
     }
     
+    func calibrate() {
+        guard let motion = motionManager.deviceMotion else { return }
+        baselinePitch = motion.attitude.pitch
+        baselineRoll = motion.attitude.roll
+        isInDeadZone = true
+    }
+    
     func startTracking() {
         guard !isTracking, motionManager.isDeviceMotionAvailable else { return }
         
+        // Startujemo praćenje pokreta
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
             guard let self = self,
                   let motion = motion,
                   error == nil else { return }
             
-            // Ažuriramo vrednosti sa filterom za glatkije pokrete
-            self.pitch = motion.attitude.pitch
-            self.roll = motion.attitude.roll
+            // Ako još nismo kalibrisani, postavljamo baseline
+            if !self.isTracking {
+                self.baselinePitch = motion.attitude.pitch
+                self.baselineRoll = motion.attitude.roll
+                self.isInDeadZone = true
+                self.isTracking = true
+                return
+            }
+            
+            // Računamo relativne vrednosti u odnosu na baseline
+            let relativePitch = motion.attitude.pitch - self.baselinePitch
+            let relativeRoll = motion.attitude.roll - self.baselineRoll
+            
+            // Proveravamo mrtvu zonu
+            let isInPitchDeadZone = abs(relativePitch) < self.deadZone
+            let isInRollDeadZone = abs(relativeRoll) < self.deadZone
+            self.isInDeadZone = isInPitchDeadZone && isInRollDeadZone
+            
+            // Ažuriramo vrednosti samo ako smo izvan mrtve zone
+            self.pitch = self.isInDeadZone ? 0 : -relativePitch  // Invertujemo vrednost pitch-a
+            self.roll = self.isInDeadZone ? 0 : -relativeRoll    // Invertujemo vrednost roll-a
             
             // Proveravamo granice i primenjujemo bounce ako je potrebno
             self.checkBoundsAndApplyBounce()
         }
-        
-        isTracking = true
     }
     
     func stopTracking() {
@@ -54,6 +86,7 @@ class MotionManager: ObservableObject {
         // Resetujemo vrednosti
         pitch = 0.0
         roll = 0.0
+        isInDeadZone = true
     }
     
     private func checkBoundsAndApplyBounce() {

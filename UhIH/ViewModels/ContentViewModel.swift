@@ -14,7 +14,6 @@ class ContentViewModel: ObservableObject {
     @Published var isRotating = false
     @Published var isMotionTrackingEnabled: Bool = false
     @Published var imageOffset: CGPoint = .zero
-    @Published var showCompass: Bool = false
     
     private var displayLink: CADisplayLink?
     private var currentZoomSpeed: CGFloat = 0.02
@@ -29,6 +28,9 @@ class ContentViewModel: ObservableObject {
     
     private let motionManager = MotionManager()
     private var motionBoundary: MotionBoundary?
+    
+    // Set za čuvanje Combine subscriptions
+    private var cancellables = Set<AnyCancellable>()
     
     // Feedback generator za bounce
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -179,7 +181,6 @@ class ContentViewModel: ObservableObject {
     
     func toggleMotionTracking() {
         isMotionTrackingEnabled.toggle()
-        showCompass = isMotionTrackingEnabled
         
         if isMotionTrackingEnabled {
             startMotionTracking()
@@ -198,10 +199,16 @@ class ContentViewModel: ObservableObject {
             scale: scale
         )
         
+        // Resetujemo offset slike na početnu poziciju
+        imageOffset = .zero
+        
+        // Kalibrišemo trenutni položaj telefona kao referentnu tačku
+        motionManager.calibrate()
+        
         // Startujemo praćenje pokreta
         motionManager.startTracking()
         
-        // Observujemo promene u nagibu
+        // Pratimo promene u nagibu
         motionManager.$pitch
             .combineLatest(motionManager.$roll)
             .sink { [weak self] pitch, roll in
@@ -212,15 +219,14 @@ class ContentViewModel: ObservableObject {
     
     private func stopMotionTracking() {
         motionManager.stopTracking()
-        showCompass = false
     }
     
     private func updateImagePosition(pitch: Double, roll: Double) {
         guard let boundary = motionBoundary else { return }
         
         // Konvertujemo nagib u pomeranje (možemo fino podesiti množioce)
-        let deltaX = CGFloat(roll) * 10
-        let deltaY = CGFloat(pitch) * 10
+        let deltaX = CGFloat(roll) * 20  // Povećao sam množilac za bolju kontrolu
+        let deltaY = CGFloat(pitch) * 20
         
         // Računamo novu poziciju
         let newPosition = CGPoint(
@@ -234,11 +240,8 @@ class ContentViewModel: ObservableObject {
             velocity: CGPoint(x: deltaX, y: deltaY)
         )
         
-        // Ako smo udarili u granicu, aktiviramo haptic feedback
+        // Primenjujemo bounce animaciju ako je potrebno
         if shouldBounce {
-            impactFeedback.impactOccurred()
-            
-            // Primenjujemo bounce animaciju
             let (bouncePosition, animation) = boundary.createBounceAnimation(from: boundedPosition)
             withAnimation(animation) {
                 imageOffset = bouncePosition
@@ -258,6 +261,17 @@ class ContentViewModel: ObservableObject {
         }
         imageOffset = .zero
         stopMotionTracking()
-        showCompass = false
+    }
+    
+    func resetApp() {
+        selectedHand = nil
+        selectedItems = []
+        images = []
+        selectedImage = nil
+        hasSelectedImage = false
+        scale = minScale
+        rotation = 0
+        imageOffset = .zero
+        stopMotionTracking()
     }
 } 
