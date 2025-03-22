@@ -1,3 +1,6 @@
+import SwiftUI
+import PhotosUI
+
 struct ImageDetailView: View {
     @ObservedObject var viewModel: ContentViewModel
     
@@ -13,20 +16,24 @@ struct ImageDetailView: View {
                         .aspectRatio(contentMode: .fit)
                         .scaleEffect(viewModel.scale)
                         .rotationEffect(.degrees(viewModel.rotation))
-                        .offset(viewModel.imageOffset)
-                
-                    // Compass indikator
-                    if viewModel.showCompass {
-                        CompassIndicator(
-                            pitch: viewModel.motionManager.pitch,
-                            roll: viewModel.motionManager.roll,
-                            isActive: viewModel.isMotionTrackingEnabled
-                        )
-                    }
+                        .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
                 }
                 
-                RadialMenuView(viewModel: viewModel)
-                    .position(x: geometry.size.width / 2, y: geometry.size.height - 100)
+                // Dugme za izbor slike
+                VStack {
+                    Spacer()
+                    PhotosPicker(selection: $viewModel.selectedItems,
+                               maxSelectionCount: 1,
+                               matching: .images) {
+                        Text("Choose Image")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(width: 200, height: 50)
+                            .background(Color.blue)
+                            .cornerRadius(15)
+                    }
+                    .padding(.bottom, 50)
+                }
             }
         }
     }
