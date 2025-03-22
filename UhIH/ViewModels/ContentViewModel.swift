@@ -35,6 +35,9 @@ class ContentViewModel: ObservableObject {
     // Feedback generator za bounce
     private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     
+    private var lastDebugPrintTime: TimeInterval = 0
+    private let debugPrintInterval: TimeInterval = 0.5 // Prikazujemo podatke svakih 500ms
+    
     enum Handedness {
         case left
         case right
@@ -67,6 +70,9 @@ class ContentViewModel: ObservableObject {
         
         scale = min(scale + currentZoomSpeed * CGFloat(deltaTime * 60), maxScale)
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
+        
+        // Ažuriramo boundary kada se promeni zoom
+        updateMotionBoundary()
     }
     
     @objc private func handleZoomOut() {
@@ -78,6 +84,45 @@ class ContentViewModel: ObservableObject {
         
         scale = max(scale - currentZoomSpeed * CGFloat(deltaTime * 60), minScale)
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
+        
+        // Ažuriramo boundary kada se promeni zoom
+        updateMotionBoundary()
+    }
+    
+    private func updateMotionBoundary() {
+        guard let image = selectedImage else { return }
+        
+        // Ažuriramo boundary sa novom skalom
+        motionBoundary = MotionBoundary(
+            imageSize: image.size,
+            viewSize: UIScreen.main.bounds.size,
+            scale: scale
+        )
+        
+        // Ažuriramo debug informacije
+        if let scaledSize = calculateImageSize(at: scale),
+           let maxOffset = calculateMaxOffset() {
+            let screenSize = UIScreen.main.bounds.size
+            let distanceFromLeft = maxOffset.x + imageOffset.x
+            let distanceFromRight = maxOffset.x - imageOffset.x
+            let distanceFromTop = maxOffset.y + imageOffset.y
+            let distanceFromBottom = maxOffset.y - imageOffset.y
+            
+            print("""
+            ----------------------------------------
+            ZOOM PROMENA: \(String(format: "%.1f", scale))x
+            ----------------------------------------
+            Ekran: \(Int(screenSize.width))×\(Int(screenSize.height))
+            Slika: \(Int(scaledSize.width))×\(Int(scaledSize.height))
+            ----------------------------------------
+            Od ivica:
+            Levo: \(String(format: "%.1f", distanceFromLeft))px
+            Desno: \(String(format: "%.1f", distanceFromRight))px
+            Gore: \(String(format: "%.1f", distanceFromTop))px
+            Dole: \(String(format: "%.1f", distanceFromBottom))px
+            ----------------------------------------
+            """)
+        }
     }
     
     func stopZooming() {
@@ -208,9 +253,11 @@ class ContentViewModel: ObservableObject {
         // Startujemo praćenje pokreta
         motionManager.startTracking()
         
-        // Pratimo promene u nagibu
+        // Pratimo promene u nagibu sa optimizovanim throttle i debounce
         motionManager.$pitch
             .combineLatest(motionManager.$roll)
+            .throttle(for: .milliseconds(16), scheduler: RunLoop.main, latest: true) // 60fps
+            .debounce(for: .milliseconds(8), scheduler: RunLoop.main)
             .sink { [weak self] pitch, roll in
                 self?.updateImagePosition(pitch: pitch, roll: roll)
             }
@@ -222,35 +269,58 @@ class ContentViewModel: ObservableObject {
     }
     
     private func updateImagePosition(pitch: Double, roll: Double) {
-        guard let boundary = motionBoundary else { return }
+        // Pomeranje počinje tek kada je slika zoomirana (scale > 1.0)
+        let motionFactor: CGFloat = scale > 1.0 ? 5.0 : 0.0
         
-        // Konvertujemo nagib u pomeranje (možemo fino podesiti množioce)
-        let deltaX = CGFloat(roll) * 20  // Povećao sam množilac za bolju kontrolu
-        let deltaY = CGFloat(pitch) * 20
+        // Konvertujemo nagib u pomeranje
+        let deltaX = CGFloat(roll) * motionFactor
+        let deltaY = CGFloat(pitch) * motionFactor
         
-        // Računamo novu poziciju
-        let newPosition = CGPoint(
-            x: imageOffset.x + deltaX,
-            y: imageOffset.y + deltaY
-        )
-        
-        // Primenjujemo boundary i bounce
-        let (boundedPosition, shouldBounce) = boundary.applyBounce(
-            to: newPosition,
-            velocity: CGPoint(x: deltaX, y: deltaY)
-        )
-        
-        // Primenjujemo bounce animaciju ako je potrebno
-        if shouldBounce {
-            let (bouncePosition, animation) = boundary.createBounceAnimation(from: boundedPosition)
-            withAnimation(animation) {
-                imageOffset = bouncePosition
-            }
+        // Proveravamo granice i ažuriramo poziciju
+        if let maxOffset = calculateMaxOffset() {
+            // Računamo potencijalnu novu poziciju
+            let potentialX = imageOffset.x + deltaX
+            let potentialY = imageOffset.y + deltaY
+            
+            // Ograničavamo pomeranje na maksimalne vrednosti
+            imageOffset.x = max(min(potentialX, maxOffset.x), -maxOffset.x)
+            imageOffset.y = max(min(potentialY, maxOffset.y), -maxOffset.y)
         } else {
-            // Normalno pomeranje
-            withAnimation(.linear(duration: 0.1)) {
-                imageOffset = boundedPosition
+            // Ako nemamo granice, ažuriramo poziciju normalno
+            imageOffset = CGPoint(
+                x: imageOffset.x + deltaX,
+                y: imageOffset.y + deltaY
+            )
+        }
+        
+        // Debug informacije (smanjena frekvenca)
+        let currentTime = CACurrentMediaTime()
+        if currentTime - lastDebugPrintTime >= debugPrintInterval {
+            if let scaledSize = calculateImageSize(at: scale),
+               let maxOffset = calculateMaxOffset() {
+                let screenSize = UIScreen.main.bounds.size
+                let distanceFromLeft = maxOffset.x + imageOffset.x
+                let distanceFromRight = maxOffset.x - imageOffset.x
+                let distanceFromTop = maxOffset.y + imageOffset.y
+                let distanceFromBottom = maxOffset.y - imageOffset.y
+                
+                print("""
+                ----------------------------------------
+                Ekran: \(Int(screenSize.width))×\(Int(screenSize.height))
+                Slika: \(Int(scaledSize.width))×\(Int(scaledSize.height)) (\(String(format: "%.1f", scale))x)
+                ----------------------------------------
+                Od ivica:
+                Levo: \(String(format: "%.1f", distanceFromLeft))px
+                Desno: \(String(format: "%.1f", distanceFromRight))px
+                Gore: \(String(format: "%.1f", distanceFromTop))px
+                Dole: \(String(format: "%.1f", distanceFromBottom))px
+                ----------------------------------------
+                Pitch: \(String(format: "%.1f", pitch))° | Roll: \(String(format: "%.1f", roll))°
+                Pomeranje: \(String(format: "%.1f", deltaX))px,\(String(format: "%.1f", deltaY))px
+                ----------------------------------------
+                """)
             }
+            lastDebugPrintTime = currentTime
         }
     }
     
@@ -273,5 +343,63 @@ class ContentViewModel: ObservableObject {
         rotation = 0
         imageOffset = .zero
         stopMotionTracking()
+    }
+    
+    // Funkcija za računanje stvarne veličine slike pri različitim zoomovima
+    private func calculateImageSize(at scale: CGFloat) -> CGSize? {
+        guard let image = selectedImage else { return nil }
+        
+        // Računamo stvarnu veličinu slike nakon skaliranja
+        let scaledWidth = image.size.width * scale
+        let scaledHeight = image.size.height * scale
+        
+        return CGSize(width: scaledWidth, height: scaledHeight)
+    }
+    
+    // Funkcija za prikazivanje informacija o veličini
+    func getImageSizeInfo() -> String {
+        guard let scaledSize = calculateImageSize(at: scale) else { return "Nema slike" }
+        
+        return """
+        Veličina slike: \(Int(scaledSize.width))×\(Int(scaledSize.height))
+        Nivo zumiranja: \(String(format: "%.1f", scale))x
+        """
+    }
+    
+    // Funkcija za računanje maksimalnog pomeranja slike u svakom smeru
+    private func calculateMaxOffset() -> (x: CGFloat, y: CGFloat)? {
+        guard let image = selectedImage else { return nil }
+        
+        // Računamo ravnomerno raspoređen fiksni zoom od 1.0 do 5.0 za zoom od 1 do 10
+        let fixedScale: CGFloat = 1.0 + (scale - 1.0) * (4.0 / 9.0)
+        
+        let scaledWidth = image.size.width * fixedScale
+        let scaledHeight = image.size.height * fixedScale
+        
+        // Dobijamo veličinu ekrana
+        let screenWidth = UIScreen.main.bounds.width
+        let screenHeight = UIScreen.main.bounds.height
+        
+        // Računamo maksimalno pomeranje uzimajući u obzir rotaciju
+        let maxOffsetX = max((scaledWidth - screenWidth) / 2, 0)
+        let maxOffsetY = max((scaledHeight - screenHeight) / 2, 0)
+        
+        // Ako je slika rotirana za 90° ili 270°, zamenjujemo X i Y vrednosti
+        let normalizedRotation = abs(rotation.truncatingRemainder(dividingBy: 360))
+        if normalizedRotation >= 90 && normalizedRotation < 270 {
+            return (maxOffsetY, maxOffsetX)
+        }
+        
+        return (maxOffsetX, maxOffsetY)
+    }
+    
+    // Funkcija za prikazivanje informacija o pomeranju
+    func getOffsetInfo() -> String {
+        guard let maxOffset = calculateMaxOffset() else { return "Nema slike" }
+        
+        return """
+        Trenutno pomeranje: \(Int(imageOffset.x))px,\(Int(imageOffset.y))px
+        Maksimalno pomeranje: \(Int(maxOffset.x))px,\(Int(maxOffset.y))px
+        """
     }
 } 

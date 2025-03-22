@@ -19,9 +19,29 @@ struct ImageDetailView: View {
                         .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
                 }
                 
-                // Dugme za izbor slike
                 VStack {
+                    // Informacije o pomeranju i veličini
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(viewModel.getImageSizeInfo())
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.black.opacity(0.7))
+                            .cornerRadius(8)
+                        
+                        Text(viewModel.getOffsetInfo())
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.black.opacity(0.7))
+                            .cornerRadius(8)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
                     Spacer()
+                    
+                    // Dugme za izbor slike
                     PhotosPicker(selection: $viewModel.selectedItems,
                                maxSelectionCount: 1,
                                matching: .images) {

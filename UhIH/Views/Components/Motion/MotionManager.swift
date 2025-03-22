@@ -17,6 +17,10 @@ class MotionManager: ObservableObject {
     // Mrtva zona (u radijanima)
     private let deadZone: Double = 0.1 // približno 5.7 stepeni
     
+    // Maksimalne vrednosti (u radijanima)
+    private let maxPitch: Double = 1.0 // približno 57 stepeni
+    private let maxRoll: Double = 1.0  // približno 57 stepeni
+    
     // Status praćenja pokreta
     @Published var isTracking: Bool = false
     @Published var isInDeadZone: Bool = true
@@ -69,8 +73,14 @@ class MotionManager: ObservableObject {
             self.isInDeadZone = isInPitchDeadZone && isInRollDeadZone
             
             // Ažuriramo vrednosti samo ako smo izvan mrtve zone
-            self.pitch = self.isInDeadZone ? 0 : -relativePitch  // Invertujemo vrednost pitch-a
-            self.roll = self.isInDeadZone ? 0 : -relativeRoll    // Invertujemo vrednost roll-a
+            if !self.isInDeadZone {
+                // Ograničavamo vrednosti na maksimalne
+                self.pitch = -max(min(relativePitch, self.maxPitch), -self.maxPitch)
+                self.roll = -max(min(relativeRoll, self.maxRoll), -self.maxRoll)
+            } else {
+                self.pitch = 0
+                self.roll = 0
+            }
             
             // Proveravamo granice i primenjujemo bounce ako je potrebno
             self.checkBoundsAndApplyBounce()
