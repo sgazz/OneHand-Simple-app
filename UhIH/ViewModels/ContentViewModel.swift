@@ -270,7 +270,7 @@ class ContentViewModel: ObservableObject {
     
     private func updateImagePosition(pitch: Double, roll: Double) {
         // Pomeranje počinje tek kada je slika zoomirana (scale > 1.0)
-        let motionFactor: CGFloat = scale > 1.0 ? 5.0 : 0.0
+        let motionFactor: CGFloat = scale > 1.0 ? (1.0 + (scale - 1.0) * (4.0 / 9.0)) : 0.0
         
         // Konvertujemo nagib u pomeranje
         let deltaX = CGFloat(roll) * motionFactor
