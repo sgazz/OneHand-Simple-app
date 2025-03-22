@@ -9,6 +9,7 @@ struct RadialMenuView: View {
     let menuItems: [RadialMenuItem] = [
         RadialMenuItem(icon: "minus.magnifyingglass", color: .red),    // Zoom out
         RadialMenuItem(icon: "plus.magnifyingglass", color: .blue),     // Zoom in
+        RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .green), // Reset
         RadialMenuItem(icon: "arrow.clockwise", color: .yellow),        // Rotacija u smeru kazaljke
         RadialMenuItem(icon: "arrow.counterclockwise", color: .teal),   // Rotacija u suprotnom smeru
         RadialMenuItem(icon: "wand.and.stars", color: .purple),         // Magični štapić
@@ -84,10 +85,15 @@ struct MenuButton: View {
         Image(systemName: item.icon)
             .font(.title3)
             .foregroundColor(.white)
-            .frame(width: 60, height: 60)
+            .frame(width: index == 2 ? 45 : 60, height: index == 2 ? 45 : 60) // Manje reset dugme
             .background(item.color)
             .clipShape(Circle())
             .shadow(radius: 4)
+            .onTapGesture {
+                if item.icon == "arrow.counterclockwise.circle" {
+                    viewModel.resetImage()
+                }
+            }
             .simultaneousGesture(
                 TapGesture(count: 2)
                     .onEnded { _ in
@@ -152,7 +158,21 @@ struct MenuButton: View {
         // Izračunavanje ugla za trenutno dugme
         let angleRange = endAngle - startAngle
         let angleStep = angleRange / CGFloat(totalItems - 1)
-        let angle = startAngle + (angleStep * CGFloat(index))
+        var angle: CGFloat
+        
+        if index == 2 { // Reset dugme
+            // Izračunavamo uglove za zoom in (index 1) i rotation (index 3)
+            let zoomInAngle = startAngle + (angleStep * 1)
+            let rotationAngle = startAngle + (angleStep * 3)
+            // Postavljamo reset dugme tačno na sredinu između ta dva ugla
+            angle = (zoomInAngle + rotationAngle) / 2
+            return CGPoint(
+                x: selectedHand == .right ? radius * cos(angle) : -radius * cos(angle),
+                y: radius * sin(angle)
+            )
+        } else {
+            angle = startAngle + (angleStep * CGFloat(index))
+        }
         
         // Konverzija iz radijana u koordinate
         var x = radius * cos(angle)

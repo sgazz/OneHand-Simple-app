@@ -166,4 +166,12 @@ class ContentViewModel: ObservableObject {
         displayLink?.invalidate()
         displayLink = nil
     }
+    
+    // Funkcija za reset slike
+    func resetImage() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            scale = minScale
+            rotation = 0
+        }
+    }
 } 
