@@ -7,22 +7,22 @@ struct ImageDetailView: View {
     @State private var scale: CGFloat = 1.0
     
     var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
+        GeometryReader { geometry in
+            ZStack {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
+                    .scaleEffect(viewModel.scale, anchor: .center)
+                    .gesture(
+                        MagnificationGesture()
+                            .onChanged { value in
+                                viewModel.scale = value.magnitude
+                            }
+                    )
+                
                 VStack {
-                    ScrollView([.horizontal, .vertical]) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: geometry.size.width * viewModel.scale)
-                            .gesture(
-                                MagnificationGesture()
-                                    .onChanged { value in
-                                        viewModel.scale = value.magnitude
-                                    }
-                            )
-                    }
-                    
+                    Spacer()
                     PhotosPicker(selection: $viewModel.selectedItems,
                                maxSelectionCount: 1,
                                matching: .images) {
