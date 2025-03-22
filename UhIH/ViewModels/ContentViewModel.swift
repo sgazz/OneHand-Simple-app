@@ -9,10 +9,13 @@ class ContentViewModel: ObservableObject {
     @Published var hasSelectedImage = false
     @Published var scale: CGFloat = 1.0
     @Published var isZooming = false
+    @Published var rotation: Double = 0.0
+    @Published var isRotating = false
     
     private var displayLink: CADisplayLink?
     private var currentZoomSpeed: CGFloat = 0.02
     private var lastUpdateTime: TimeInterval = 0
+    private let rotationSpeed: Double = 180.0 // Konstantna brzina rotacije
     
     let minScale: CGFloat = 1.0  // Početna veličina
     let maxScale: CGFloat = 10.0  // Maksimalni zoom
@@ -107,5 +110,60 @@ class ContentViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    // Funkcije za rotaciju
+    func rotateClockwise() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            rotation += 45
+        }
+    }
+    
+    func rotateCounterclockwise() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            rotation -= 45
+        }
+    }
+    
+    func startContinuousRotationClockwise() {
+        isRotating = true
+        lastUpdateTime = CACurrentMediaTime()
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(handleClockwiseRotation))
+        displayLink?.add(to: .main, forMode: .common)
+    }
+    
+    func startContinuousRotationCounterclockwise() {
+        isRotating = true
+        lastUpdateTime = CACurrentMediaTime()
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(handleCounterclockwiseRotation))
+        displayLink?.add(to: .main, forMode: .common)
+    }
+    
+    @objc private func handleClockwiseRotation() {
+        guard isRotating else { return }
+        
+        let currentTime = CACurrentMediaTime()
+        let deltaTime = currentTime - lastUpdateTime
+        lastUpdateTime = currentTime
+        
+        rotation += rotationSpeed * deltaTime
+    }
+    
+    @objc private func handleCounterclockwiseRotation() {
+        guard isRotating else { return }
+        
+        let currentTime = CACurrentMediaTime()
+        let deltaTime = currentTime - lastUpdateTime
+        lastUpdateTime = currentTime
+        
+        rotation -= rotationSpeed * deltaTime
+    }
+    
+    func stopRotation() {
+        isRotating = false
+        displayLink?.invalidate()
+        displayLink = nil
     }
 } 

@@ -14,6 +14,7 @@ struct ImageDetailView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height)
                     .scaleEffect(viewModel.scale, anchor: .center)
+                    .rotationEffect(.degrees(viewModel.rotation))
                     .gesture(
                         MagnificationGesture()
                             .onChanged { value in

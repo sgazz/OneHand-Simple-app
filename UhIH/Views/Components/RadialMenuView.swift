@@ -9,7 +9,8 @@ struct RadialMenuView: View {
     let menuItems: [RadialMenuItem] = [
         RadialMenuItem(icon: "minus.magnifyingglass", color: .red),    // Zoom out
         RadialMenuItem(icon: "plus.magnifyingglass", color: .blue),     // Zoom in
-        RadialMenuItem(icon: "crop", color: .green),                     // Orezivanje
+        RadialMenuItem(icon: "arrow.clockwise", color: .yellow),        // Rotacija u smeru kazaljke
+        RadialMenuItem(icon: "arrow.counterclockwise", color: .teal),   // Rotacija u suprotnom smeru
         RadialMenuItem(icon: "wand.and.stars", color: .purple),         // Magični štapić
         RadialMenuItem(icon: "slider.horizontal.3", color: .orange)     // Slider za podešavanja
     ]
@@ -95,6 +96,10 @@ struct MenuButton: View {
                             viewModel.zoomToMax()
                         case "minus.magnifyingglass":
                             viewModel.zoomToMin()
+                        case "arrow.clockwise":
+                            viewModel.rotateClockwise()
+                        case "arrow.counterclockwise":
+                            viewModel.rotateCounterclockwise()
                         default:
                             break
                         }
@@ -108,6 +113,10 @@ struct MenuButton: View {
                             viewModel.startContinuousZoomIn()
                         case "minus.magnifyingglass":
                             viewModel.startContinuousZoomOut()
+                        case "arrow.clockwise":
+                            viewModel.startContinuousRotationClockwise()
+                        case "arrow.counterclockwise":
+                            viewModel.startContinuousRotationCounterclockwise()
                         default:
                             break
                         }
@@ -117,6 +126,7 @@ struct MenuButton: View {
                 DragGesture(minimumDistance: 0)
                     .onEnded { _ in
                         viewModel.stopZooming()
+                        viewModel.stopRotation()
                     }
             )
             .offset(x: isExpanded ? calculateOffset().x : 0,
