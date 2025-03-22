@@ -6,15 +6,17 @@ struct RadialMenuView: View {
     @ObservedObject var viewModel: ContentViewModel
     
     // Konfiguracija dugmadi
-    let menuItems: [RadialMenuItem] = [
-        RadialMenuItem(icon: "minus.magnifyingglass", color: .red),    // Zoom out
-        RadialMenuItem(icon: "plus.magnifyingglass", color: .blue),     // Zoom in
-        RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .green), // Reset
-        RadialMenuItem(icon: "arrow.clockwise", color: .yellow),        // Rotacija u smeru kazaljke
-        RadialMenuItem(icon: "arrow.counterclockwise", color: .teal),   // Rotacija u suprotnom smeru
-        RadialMenuItem(icon: "wand.and.stars", color: .purple),         // Magični štapić
-        RadialMenuItem(icon: "slider.horizontal.3", color: .orange)     // Slider za podešavanja
-    ]
+    private var menuItems: [RadialMenuItem] {
+        [
+            RadialMenuItem(icon: "minus.magnifyingglass", color: .red),
+            RadialMenuItem(icon: "plus.magnifyingglass", color: .blue),
+            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .green),
+            RadialMenuItem(icon: "arrow.clockwise", color: .purple),
+            RadialMenuItem(icon: "arrow.counterclockwise", color: .cyan),
+            RadialMenuItem(icon: "move.3d", color: .orange),
+            RadialMenuItem(icon: "slider.horizontal.3", color: .orange)
+        ]
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -85,13 +87,15 @@ struct MenuButton: View {
         Image(systemName: item.icon)
             .font(.title3)
             .foregroundColor(.white)
-            .frame(width: index == 2 ? 45 : 60, height: index == 2 ? 45 : 60) // Manje reset dugme
+            .frame(width: index == 2 ? 45 : 60, height: index == 2 ? 45 : 60)
             .background(item.color)
             .clipShape(Circle())
             .shadow(radius: 4)
             .onTapGesture {
                 if item.icon == "arrow.counterclockwise.circle" {
                     viewModel.resetImage()
+                } else if item.icon == "move.3d" {
+                    viewModel.toggleMotionTracking()
                 }
             }
             .simultaneousGesture(
