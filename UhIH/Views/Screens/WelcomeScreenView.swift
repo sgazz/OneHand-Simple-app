@@ -3,6 +3,8 @@ import PhotosUI
 
 struct WelcomeScreenView: View {
     @ObservedObject var viewModel: ContentViewModel
+    @State private var isLogoAnimating = false
+    @State private var selectedHandScale: CGFloat = 1.0
     
     var body: some View {
         GeometryReader { geometry in
@@ -16,6 +18,7 @@ struct WelcomeScreenView: View {
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AppTheme.Layout.paddingStandard)
                         .padding(.top, geometry.size.height * 0.1)
+                        .transition(.opacity)
                 }
                 .frame(maxWidth: .infinity)
                 
@@ -30,13 +33,22 @@ struct WelcomeScreenView: View {
                             Circle()
                                 .stroke(Color.white.opacity(0.2), lineWidth: 2)
                         )
-                        .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: 5)
+                        .shadow(radius: AppTheme.Shadows.medium.radius,
+                               x: AppTheme.Shadows.medium.x,
+                               y: AppTheme.Shadows.medium.y)
+                        .scaleEffect(isLogoAnimating ? 1.05 : 1.0)
                     
                     Image("OneHandLogo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 80, height: 80)
                         .foregroundColor(.white)
+                        .rotationEffect(.degrees(isLogoAnimating ? 360 : 0))
+                }
+                .onAppear {
+                    withAnimation(Animation.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                        isLogoAnimating = true
+                    }
                 }
                 
                 Spacer()
@@ -47,6 +59,7 @@ struct WelcomeScreenView: View {
                         .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.textPrimary)
                         .padding(.bottom, AppTheme.Layout.spacingMedium)
+                        .transition(.opacity)
                     
                     // Dugmad za izbor ruke
                     HStack(spacing: AppTheme.Layout.spacingMedium) {
@@ -55,9 +68,9 @@ struct WelcomeScreenView: View {
                             icon: "hand.point.left.fill",
                             isSelected: viewModel.selectedHand == .left,
                             action: { 
-                                HapticManager.playSelection()
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                withAnimation(AppTheme.Animations.spring) {
                                     viewModel.selectedHand = .left
+                                    HapticManager.playSelection()
                                 }
                             }
                         )
@@ -67,9 +80,9 @@ struct WelcomeScreenView: View {
                             icon: "hand.point.right.fill",
                             isSelected: viewModel.selectedHand == .right,
                             action: { 
-                                HapticManager.playSelection()
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                withAnimation(AppTheme.Animations.spring) {
                                     viewModel.selectedHand = .right
+                                    HapticManager.playSelection()
                                 }
                             }
                         )
@@ -86,14 +99,17 @@ struct WelcomeScreenView: View {
                             .frame(width: AppTheme.Layout.buttonWidthLarge, height: AppTheme.Layout.buttonHeight)
                             .background(AppTheme.Colors.buttonActive)
                             .cornerRadius(AppTheme.Layout.cornerRadiusMedium)
+                            .shadow(radius: AppTheme.Shadows.small.radius,
+                                   x: AppTheme.Shadows.small.x,
+                                   y: AppTheme.Shadows.small.y)
                     }
                     .disabled(viewModel.selectedHand == nil)
                     .opacity(viewModel.selectedHand == nil ? 0.5 : 1.0)
-                    .animation(.easeInOut(duration: 0.2), value: viewModel.selectedHand)
+                    .animation(AppTheme.Animations.spring, value: viewModel.selectedHand)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, AppTheme.Layout.paddingStandard)
-                .padding(.bottom, geometry.size.height * 0.15) // 15% od dna
+                .padding(.bottom, geometry.size.height * 0.15)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -106,11 +122,24 @@ struct HandSelectionButton: View {
     let isSelected: Bool
     let action: () -> Void
     
+    @State private var isPressed = false
+    
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            withAnimation(AppTheme.Animations.spring) {
+                isPressed = true
+                action()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(AppTheme.Animations.spring) {
+                    isPressed = false
+                }
+            }
+        }) {
             HStack(spacing: AppTheme.Layout.spacingSmall) {
                 Image(systemName: icon)
                     .font(.system(size: 20))
+                    .symbolEffect(.bounce, value: isSelected)
                 Text(title)
             }
             .font(AppTheme.Typography.headline)
@@ -118,8 +147,16 @@ struct HandSelectionButton: View {
             .frame(width: AppTheme.Layout.buttonWidthStandard, height: AppTheme.Layout.buttonHeight)
             .background(isSelected ? AppTheme.Colors.buttonActive : AppTheme.Colors.buttonInactive)
             .cornerRadius(AppTheme.Layout.cornerRadiusMedium)
-            .scaleEffect(isSelected ? 1.05 : 1.0)
-            .animation(.spring(response: 0.2), value: isSelected)
+            .shadow(radius: isSelected ? AppTheme.Shadows.medium.radius : AppTheme.Shadows.small.radius,
+                   x: isSelected ? AppTheme.Shadows.medium.x : AppTheme.Shadows.small.x,
+                   y: isSelected ? AppTheme.Shadows.medium.y : AppTheme.Shadows.small.y)
+            .scaleEffect(isSelected ? 1.05 : (isPressed ? 0.95 : 1.0))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTheme.Layout.cornerRadiusMedium)
+                    .stroke(AppTheme.Colors.buttonActive, lineWidth: isSelected ? 2 : 0)
+                    .opacity(isSelected ? 0.5 : 0)
+            )
         }
+        .buttonStyle(PlainButtonStyle())
     }
 } 
