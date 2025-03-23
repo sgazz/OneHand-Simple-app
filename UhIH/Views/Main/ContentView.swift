@@ -3,6 +3,7 @@ import PhotosUI
 
 struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
+    @StateObject private var welcomeGuideViewModel = WelcomeGuideViewModel()
     
     var body: some View {
         ZStack {
@@ -20,11 +21,17 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
+            
+            // Welcome Guide
+            WelcomeGuideView(viewModel: welcomeGuideViewModel)
         }
         .onChange(of: viewModel.selectedItems) { oldValue, newValue in
             Task {
                 await viewModel.handleImageSelection(newValue)
             }
+        }
+        .onAppear {
+            welcomeGuideViewModel.showGuide()
         }
     }
 }
