@@ -29,19 +29,25 @@ struct WelcomeGuideView: View {
                     // Sadržaj sekcije
                     VStack(spacing: AppTheme.Layout.spacingMedium) {
                         Text(WelcomeGuideSection.sections[currentSectionIndex].title)
-                            .font(AppTheme.Typography.headline)
+                            .font(.custom("SF Pro Display", size: 22, relativeTo: .headline))
                             .foregroundColor(AppTheme.Colors.textPrimary)
                             .multilineTextAlignment(.center)
                             .padding(.bottom, AppTheme.Layout.spacingSmall)
                         
                         Text(WelcomeGuideSection.sections[currentSectionIndex].content)
-                            .font(AppTheme.Typography.body)
+                            .font(.custom("SF Pro Display", size: 17, relativeTo: .body))
                             .foregroundColor(AppTheme.Colors.textSecondary)
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(.horizontal, AppTheme.Layout.paddingStandard)
+                    .padding(.vertical, AppTheme.Layout.spacingMedium)
+                    .background(
+                        RoundedRectangle(cornerRadius: AppTheme.Layout.cornerRadiusMedium)
+                            .fill(Color.white.opacity(0.1))
+                            .blur(radius: 3)
+                    )
                     .frame(maxWidth: .infinity)
                     .offset(x: slideOffset)
                     .opacity(opacity)
@@ -110,7 +116,8 @@ struct WelcomeGuideView: View {
                     .padding(.horizontal, AppTheme.Layout.paddingStandard)
                     .padding(.bottom, AppTheme.Layout.spacingLarge)
                 }
-                .frame(width: 320, height: 400)
+                .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? 480 : 320, 
+                       height: UIDevice.current.userInterfaceIdiom == .pad ? 600 : 400)
                 .background(AppTheme.Gradients.primary)
                 .cornerRadius(AppTheme.Layout.cornerRadiusLarge)
                 .shadow(radius: AppTheme.Shadows.large.radius,
@@ -124,7 +131,7 @@ struct WelcomeGuideView: View {
                             scale = 1.0 - abs(value.translation.width / 1000)
                         }
                         .onEnded { value in
-                            let threshold: CGFloat = 50
+                            let threshold: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 75 : 50
                             if value.translation.width > threshold && currentSectionIndex > 0 {
                                 navigateToSection(currentSectionIndex - 1, direction: .right)
                             } else if value.translation.width < -threshold && 
