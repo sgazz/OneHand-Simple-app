@@ -11,6 +11,25 @@ struct WelcomeScreenView: View {
     @State private var selectedHandScale: CGFloat = 1.0
     @State private var isAnimating = false
     
+    // Fade in animacije
+    @State private var titleOpacity: Double = 0
+    @State private var logoOpacity: Double = 0
+    @State private var controlsOpacity: Double = 0
+    
+    private func animateEntrance() {
+        withAnimation(.easeOut(duration: 0.8)) {
+            titleOpacity = 1
+        }
+        
+        withAnimation(.easeOut(duration: 0.8).delay(0.3)) {
+            logoOpacity = 1
+        }
+        
+        withAnimation(.easeOut(duration: 0.8).delay(0.6)) {
+            controlsOpacity = 1
+        }
+    }
+    
     private func animateLogo() {
         guard !isAnimating else { return }
         isAnimating = true
@@ -86,12 +105,12 @@ struct WelcomeScreenView: View {
                 VStack(spacing: AppTheme.Layout.spacingLarge) {
                     // Naslov
                     Text(LocalizedStringKey("welcome_screen.title"))
-                        .font(AppTheme.Typography.titleLarge)
+                        .font(.custom("SF Pro Display", size: 34, relativeTo: .title))
                         .foregroundColor(AppTheme.Colors.textPrimary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AppTheme.Layout.paddingStandard)
                         .padding(.top, geometry.size.height * 0.1)
-                        .transition(.opacity)
+                        .opacity(titleOpacity)
                 }
                 .frame(maxWidth: .infinity)
                 
@@ -101,7 +120,8 @@ struct WelcomeScreenView: View {
                 ZStack {
                     Circle()
                         .fill(AppTheme.Gradients.primary)
-                        .frame(width: 160, height: 160)
+                        .frame(width: geometry.size.height < 500 ? 120 : (geometry.size.width < 400 ? 160 : 200),
+                               height: geometry.size.height < 500 ? 120 : (geometry.size.width < 400 ? 160 : 200))
                         .overlay(
                             Circle()
                                 .stroke(Color.white.opacity(0.2), lineWidth: 2)
@@ -113,13 +133,15 @@ struct WelcomeScreenView: View {
                     Image("OneHandLogo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 110, height: 110)
+                        .frame(width: geometry.size.height < 500 ? 80 : (geometry.size.width < 400 ? 110 : 140),
+                               height: geometry.size.height < 500 ? 80 : (geometry.size.width < 400 ? 110 : 140))
                         .foregroundColor(.white)
                         .rotationEffect(.degrees(isLogoAnimating ? 360 : 0))
                         .rotationEffect(.degrees(reverseRotation))
                         .rotation3DEffect(.degrees(pitchAngle), axis: (x: 1, y: 0, z: 0))
                         .rotation3DEffect(.degrees(rollAngle), axis: (x: 0, y: 1, z: 0))
                 }
+                .opacity(logoOpacity)
                 .onTapGesture {
                     HapticManager.playSelection()
                     animateLogo()
@@ -133,14 +155,14 @@ struct WelcomeScreenView: View {
                 }
                 
                 Spacer()
+                    .frame(height: geometry.size.height < 500 ? 10 : AppTheme.Layout.spacingLarge)
                 
                 // Donji deo (interactive) - Green Thumb Zone
-                VStack(spacing: AppTheme.Layout.spacingLarge) {
+                VStack(spacing: geometry.size.height < 500 ? AppTheme.Layout.spacingSmall : AppTheme.Layout.spacingLarge) {
                     Text(LocalizedStringKey("welcome_screen.select_hand"))
-                        .font(AppTheme.Typography.headline)
+                        .font(.custom("SF Pro Display", size: 20, relativeTo: .headline))
                         .foregroundColor(AppTheme.Colors.textPrimary)
-                        .padding(.bottom, AppTheme.Layout.spacingMedium)
-                        .transition(.opacity)
+                        .padding(.bottom, geometry.size.height < 500 ? 5 : AppTheme.Layout.spacingMedium)
                     
                     // Dugmad za izbor ruke
                     HStack(spacing: AppTheme.Layout.spacingMedium) {
@@ -175,9 +197,10 @@ struct WelcomeScreenView: View {
                                maxSelectionCount: 1,
                                matching: .images) {
                         Text(LocalizedStringKey("welcome_screen.choose_image"))
-                            .font(AppTheme.Typography.headline)
+                            .font(.custom("SF Pro Display", size: 20, relativeTo: .headline))
                             .foregroundColor(AppTheme.Colors.buttonText)
-                            .frame(width: AppTheme.Layout.buttonWidthLarge, height: AppTheme.Layout.buttonHeight)
+                            .frame(width: geometry.size.width < 400 ? AppTheme.Layout.buttonWidthLarge : AppTheme.Layout.buttonWidthLarge * 1.3, 
+                                   height: geometry.size.height < 500 ? 44 : AppTheme.Layout.buttonHeight)
                             .background(AppTheme.Colors.buttonActive)
                             .cornerRadius(AppTheme.Layout.cornerRadiusMedium)
                             .shadow(radius: AppTheme.Shadows.small.radius,
@@ -188,11 +211,15 @@ struct WelcomeScreenView: View {
                     .opacity(viewModel.selectedHand == nil ? 0.5 : 1.0)
                     .animation(AppTheme.Animations.spring, value: viewModel.selectedHand)
                 }
+                .opacity(controlsOpacity)
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, AppTheme.Layout.paddingStandard)
-                .padding(.bottom, geometry.size.height * 0.15)
+                .padding(.bottom, geometry.size.height < 500 ? geometry.size.height * 0.08 : geometry.size.height * 0.15)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onAppear {
+                animateEntrance()
+            }
         }
     }
 }
