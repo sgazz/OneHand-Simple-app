@@ -10,7 +10,7 @@ struct WelcomeScreenView: View {
                 // Gornji deo (non-interactive)
                 VStack(spacing: AppTheme.Layout.spacingLarge) {
                     // Naslov
-                    Text("OneHand Simple app")
+                    Text(LocalizedStringKey("welcome_screen.title"))
                         .font(AppTheme.Typography.titleLarge)
                         .foregroundColor(AppTheme.Colors.textPrimary)
                         .multilineTextAlignment(.center)
@@ -43,7 +43,7 @@ struct WelcomeScreenView: View {
                 
                 // Donji deo (interactive) - Green Thumb Zone
                 VStack(spacing: AppTheme.Layout.spacingLarge) {
-                    Text("Select your handedness")
+                    Text(LocalizedStringKey("welcome_screen.select_hand"))
                         .font(AppTheme.Typography.headline)
                         .foregroundColor(AppTheme.Colors.textPrimary)
                         .padding(.bottom, AppTheme.Layout.spacingMedium)
@@ -51,7 +51,7 @@ struct WelcomeScreenView: View {
                     // Dugmad za izbor ruke
                     HStack(spacing: AppTheme.Layout.spacingMedium) {
                         HandSelectionButton(
-                            title: "Left hand",
+                            title: LocalizedStringKey("welcome_screen.left_hand"),
                             icon: "hand.point.left.fill",
                             isSelected: viewModel.selectedHand == .left,
                             action: { 
@@ -63,7 +63,7 @@ struct WelcomeScreenView: View {
                         )
                         
                         HandSelectionButton(
-                            title: "Right hand",
+                            title: LocalizedStringKey("welcome_screen.right_hand"),
                             icon: "hand.point.right.fill",
                             isSelected: viewModel.selectedHand == .right,
                             action: { 
@@ -80,7 +80,7 @@ struct WelcomeScreenView: View {
                     PhotosPicker(selection: $viewModel.selectedItems,
                                maxSelectionCount: 1,
                                matching: .images) {
-                        Text("Choose Image")
+                        Text(LocalizedStringKey("welcome_screen.choose_image"))
                             .font(AppTheme.Typography.headline)
                             .foregroundColor(AppTheme.Colors.buttonText)
                             .frame(width: AppTheme.Layout.buttonWidthLarge, height: AppTheme.Layout.buttonHeight)
@@ -101,7 +101,7 @@ struct WelcomeScreenView: View {
 }
 
 struct HandSelectionButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     let isSelected: Bool
     let action: () -> Void

@@ -10,20 +10,21 @@ struct ContentView: View {
             // Gradijentna pozadina
             BackgroundGradientView()
             
-            if !viewModel.hasSelectedImage {
-                WelcomeScreenView(viewModel: viewModel)
+            if welcomeGuideViewModel.isShowingGuide {
+                WelcomeGuideView(viewModel: welcomeGuideViewModel)
             } else {
-                ZStack {
-                    ImageDetailView(viewModel: viewModel)
-                    
-                    // Dodajemo RadialMenuView preko ImageDetailView
-                    RadialMenuView(viewModel: viewModel)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                if !viewModel.hasSelectedImage {
+                    WelcomeScreenView(viewModel: viewModel)
+                } else {
+                    ZStack {
+                        ImageDetailView(viewModel: viewModel)
+                        
+                        // Dodajemo RadialMenuView preko ImageDetailView
+                        RadialMenuView(viewModel: viewModel)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
             }
-            
-            // Welcome Guide
-            WelcomeGuideView(viewModel: welcomeGuideViewModel)
         }
         .onChange(of: viewModel.selectedItems) { oldValue, newValue in
             Task {

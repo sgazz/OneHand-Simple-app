@@ -12,7 +12,7 @@ struct WelcomeGuideView: View {
                 
                 VStack(spacing: 0) {
                     // Naslov
-                    Text("Dobrodošli u\nOneHand Simple App")
+                    Text("Welcome to\nOneHand Simple App")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
@@ -52,7 +52,7 @@ struct WelcomeGuideView: View {
                                 .onTapGesture {
                                     viewModel.showAlways.toggle()
                                 }
-                            Text("Always show this screen")
+                            Text(LocalizedStringKey("welcome.always_show"))
                                 .font(.system(size: 16))
                                 .foregroundColor(.white.opacity(0.9))
                         }
@@ -61,7 +61,7 @@ struct WelcomeGuideView: View {
                         
                         // Dugmad za navigaciju
                         HStack(spacing: 20) {
-                            Button("Skip") {
+                            Button(LocalizedStringKey("welcome.skip")) {
                                 viewModel.dismissGuide()
                             }
                             .font(.system(size: 17, weight: .medium))
@@ -70,7 +70,9 @@ struct WelcomeGuideView: View {
                             .background(Color.white.opacity(0.2))
                             .cornerRadius(12)
                             
-                            Button(currentSectionIndex == WelcomeGuideSection.sections.count - 1 ? "Got it" : "Next") {
+                            Button(currentSectionIndex == WelcomeGuideSection.sections.count - 1 ? 
+                                  LocalizedStringKey("welcome.got_it") : 
+                                  LocalizedStringKey("welcome.next")) {
                                 if currentSectionIndex == WelcomeGuideSection.sections.count - 1 {
                                     HapticManager.playNotification(type: .success)
                                     viewModel.dismissGuide()
