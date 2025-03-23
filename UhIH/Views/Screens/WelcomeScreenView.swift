@@ -101,7 +101,7 @@ struct WelcomeScreenView: View {
                 ZStack {
                     Circle()
                         .fill(AppTheme.Gradients.primary)
-                        .frame(width: 120, height: 120)
+                        .frame(width: 160, height: 160)
                         .overlay(
                             Circle()
                                 .stroke(Color.white.opacity(0.2), lineWidth: 2)
@@ -113,7 +113,7 @@ struct WelcomeScreenView: View {
                     Image("OneHandLogo")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 80, height: 80)
+                        .frame(width: 110, height: 110)
                         .foregroundColor(.white)
                         .rotationEffect(.degrees(isLogoAnimating ? 360 : 0))
                         .rotationEffect(.degrees(reverseRotation))
