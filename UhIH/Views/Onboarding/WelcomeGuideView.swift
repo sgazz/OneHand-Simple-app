@@ -72,8 +72,10 @@ struct WelcomeGuideView: View {
                             
                             Button(currentSectionIndex == WelcomeGuideSection.sections.count - 1 ? "Got it" : "Next") {
                                 if currentSectionIndex == WelcomeGuideSection.sections.count - 1 {
+                                    HapticManager.playNotification(type: .success)
                                     viewModel.dismissGuide()
                                 } else {
+                                    HapticManager.playSelection()
                                     withAnimation {
                                         currentSectionIndex += 1
                                     }
