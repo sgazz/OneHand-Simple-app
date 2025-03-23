@@ -16,6 +16,13 @@ enum AppTheme {
         // Text colors
         static let textPrimary = Color.white
         static let textSecondary = Color.white.opacity(0.8)
+        
+        // Overlay colors
+        static let overlay = Color.black.opacity(0.5)
+        
+        // Progress indicator colors
+        static let progressActive = Color.white
+        static let progressInactive = Color.white.opacity(0.3)
     }
     
     // MARK: - Layout
@@ -37,6 +44,10 @@ enum AppTheme {
         
         // Padding
         static let paddingStandard: CGFloat = 25
+        
+        // Progress indicator
+        static let progressIndicatorSize: CGFloat = 8
+        static let progressIndicatorSpacing: CGFloat = 12
     }
     
     // MARK: - Typography
@@ -48,6 +59,13 @@ enum AppTheme {
         static let caption = Font.system(size: 16, weight: .regular)
     }
     
+    // MARK: - Shadows
+    enum Shadows {
+        static let small = Shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        static let medium = Shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+        static let large = Shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 8)
+    }
+    
     // MARK: - Gradients
     enum Gradients {
         static let primary = LinearGradient(
@@ -56,4 +74,17 @@ enum AppTheme {
             endPoint: .bottomTrailing
         )
     }
+    
+    // MARK: - Animations
+    enum Animations {
+        static let standard = Animation.easeInOut(duration: 0.3)
+        static let spring = Animation.spring(response: 0.3, dampingFraction: 0.7)
+    }
+}
+
+struct Shadow {
+    let color: Color
+    let radius: CGFloat
+    let x: CGFloat
+    let y: CGFloat
 } 
