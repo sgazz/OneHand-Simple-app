@@ -14,7 +14,8 @@ struct ContentView: View {
                 WelcomeGuideView(viewModel: welcomeGuideViewModel)
             } else {
                 if !viewModel.hasSelectedImage {
-                    WelcomeScreenView(viewModel: viewModel)
+                    WelcomeScreenView(viewModel: viewModel, welcomeGuideViewModel: welcomeGuideViewModel)
+                        .id(welcomeGuideViewModel.isShowingGuide)
                 } else {
                     ZStack {
                         ImageDetailView(viewModel: viewModel)

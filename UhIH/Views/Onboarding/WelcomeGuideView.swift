@@ -4,6 +4,9 @@ struct WelcomeGuideView: View {
     @ObservedObject var viewModel: WelcomeGuideViewModel
     @State private var currentSectionIndex = 0
     @State private var slideOffset: CGFloat = 0
+    @State private var opacity: Double = 1
+    @State private var scale: CGFloat = 1
+    @State private var progressScale: CGFloat = 1
     
     var body: some View {
         if viewModel.isShowingGuide {
@@ -12,7 +15,7 @@ struct WelcomeGuideView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack(spacing: 0) {
-                    // Naslov
+                    // Naslov bez animacija
                     Text(LocalizedStringKey("welcome.title"))
                         .font(AppTheme.Typography.titleMedium)
                         .foregroundColor(AppTheme.Colors.textPrimary)
@@ -37,15 +40,16 @@ struct WelcomeGuideView: View {
                             .multilineTextAlignment(.center)
                             .lineSpacing(4)
                             .fixedSize(horizontal: false, vertical: true)
-                            .transition(.opacity)
                     }
                     .padding(.horizontal, AppTheme.Layout.paddingStandard)
                     .frame(maxWidth: .infinity)
                     .offset(x: slideOffset)
+                    .opacity(opacity)
+                    .scaleEffect(scale)
                     
                     Spacer()
                     
-                    // Progress Indicator
+                    // Progress Indicator sa animacijom
                     HStack(spacing: AppTheme.Layout.progressIndicatorSpacing) {
                         ForEach(0..<WelcomeGuideSection.sections.count, id: \.self) { index in
                             Circle()
@@ -54,10 +58,14 @@ struct WelcomeGuideView: View {
                                       AppTheme.Colors.progressInactive)
                                 .frame(width: AppTheme.Layout.progressIndicatorSize, 
                                        height: AppTheme.Layout.progressIndicatorSize)
+                                .scaleEffect(index == currentSectionIndex ? progressScale : 1)
+                                .animation(Animation.spring(
+                                    response: 0.3,
+                                    dampingFraction: 0.5,
+                                    blendDuration: 0
+                                ).repeatCount(1), value: progressScale)
                                 .onTapGesture {
-                                    withAnimation(AppTheme.Animations.spring) {
-                                        navigateToSection(index)
-                                    }
+                                    navigateToSection(index, direction: index < currentSectionIndex ? .right : .left)
                                 }
                         }
                     }
@@ -112,17 +120,22 @@ struct WelcomeGuideView: View {
                     DragGesture()
                         .onChanged { value in
                             slideOffset = value.translation.width
+                            opacity = 1.0 - abs(Double(value.translation.width / 300))
+                            scale = 1.0 - abs(value.translation.width / 1000)
                         }
                         .onEnded { value in
                             let threshold: CGFloat = 50
-                            withAnimation(AppTheme.Animations.spring) {
-                                if value.translation.width > threshold && currentSectionIndex > 0 {
-                                    navigateToSection(currentSectionIndex - 1)
-                                } else if value.translation.width < -threshold && 
-                                          currentSectionIndex < WelcomeGuideSection.sections.count - 1 {
-                                    navigateToSection(currentSectionIndex + 1)
+                            if value.translation.width > threshold && currentSectionIndex > 0 {
+                                navigateToSection(currentSectionIndex - 1, direction: .right)
+                            } else if value.translation.width < -threshold && 
+                                      currentSectionIndex < WelcomeGuideSection.sections.count - 1 {
+                                navigateToSection(currentSectionIndex + 1, direction: .left)
+                            } else {
+                                withAnimation(AppTheme.Animations.spring) {
+                                    slideOffset = 0
+                                    opacity = 1
+                                    scale = 1
                                 }
-                                slideOffset = 0
                             }
                         }
                 )
@@ -131,10 +144,45 @@ struct WelcomeGuideView: View {
         }
     }
     
-    private func navigateToSection(_ index: Int) {
+    private enum NavigationDirection {
+        case left, right
+    }
+    
+    private func navigateToSection(_ index: Int, direction: NavigationDirection = .left) {
         HapticManager.playSelection()
-        withAnimation(AppTheme.Animations.spring) {
+        
+        // Animiramo izlaz trenutne sekcije
+        withAnimation(Animation.easeOut(duration: 0.3)) {
+            opacity = 0
+            scale = 0.8
+            slideOffset = direction == .left ? -50 : 50
+        }
+        
+        // Postavljamo novu sekciju
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             currentSectionIndex = index
+            
+            // Animiramo progress indikator
+            progressScale = 1.2
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                progressScale = 1.0
+            }
+            
+            // Postavljamo početno stanje za novu sekciju
+            opacity = 0
+            scale = 0.8
+            slideOffset = direction == .left ? 50 : -50
+            
+            // Animiramo ulaz nove sekcije
+            withAnimation(Animation.spring(
+                response: 0.5,
+                dampingFraction: 0.8,
+                blendDuration: 0
+            )) {
+                opacity = 1
+                scale = 1
+                slideOffset = 0
+            }
         }
     }
 } 

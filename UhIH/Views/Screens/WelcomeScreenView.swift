@@ -3,8 +3,69 @@ import PhotosUI
 
 struct WelcomeScreenView: View {
     @ObservedObject var viewModel: ContentViewModel
+    @ObservedObject var welcomeGuideViewModel: WelcomeGuideViewModel
     @State private var isLogoAnimating = false
+    @State private var reverseRotation = 0.0
+    @State private var pitchAngle = 0.0
+    @State private var rollAngle = 0.0
     @State private var selectedHandScale: CGFloat = 1.0
+    @State private var isAnimating = false
+    
+    private func animateLogo() {
+        guard !isAnimating else { return }
+        isAnimating = true
+        
+        // Prva rotacija (yaw - oko Z ose, 360°)
+        withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+            isLogoAnimating = true
+        }
+        
+        // Druga rotacija (pitch - oko X ose, 30°)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+            withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+                pitchAngle = 30
+            }
+            
+            // Treća rotacija (pitch - oko X ose, -30°)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+                withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+                    pitchAngle = -30
+                }
+                
+                // Četvrta rotacija (roll - oko Y ose, -30°)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+                    withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+                        rollAngle = -30
+                    }
+                    
+                    // Peta rotacija (roll - oko Y ose, 30°)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+                        withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+                            rollAngle = 30
+                        }
+                        
+                        // Šesta rotacija (yaw - oko Z ose, -360°)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+                            withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+                                reverseRotation = -360
+                            }
+                            
+                            // Resetovanje svih vrednosti
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+                                withAnimation(Animation.easeInOut(duration: 0.5)) {
+                                    pitchAngle = 0
+                                    rollAngle = 0
+                                    isLogoAnimating = false
+                                    reverseRotation = 0
+                                }
+                                isAnimating = false
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -36,7 +97,6 @@ struct WelcomeScreenView: View {
                         .shadow(radius: AppTheme.Shadows.medium.radius,
                                x: AppTheme.Shadows.medium.x,
                                y: AppTheme.Shadows.medium.y)
-                        .scaleEffect(isLogoAnimating ? 1.05 : 1.0)
                     
                     Image("OneHandLogo")
                         .resizable()
@@ -44,10 +104,19 @@ struct WelcomeScreenView: View {
                         .frame(width: 80, height: 80)
                         .foregroundColor(.white)
                         .rotationEffect(.degrees(isLogoAnimating ? 360 : 0))
+                        .rotationEffect(.degrees(reverseRotation))
+                        .rotation3DEffect(.degrees(pitchAngle), axis: (x: 1, y: 0, z: 0))
+                        .rotation3DEffect(.degrees(rollAngle), axis: (x: 0, y: 1, z: 0))
+                }
+                .onTapGesture {
+                    HapticManager.playSelection()
+                    animateLogo()
                 }
                 .onAppear {
-                    withAnimation(Animation.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
-                        isLogoAnimating = true
+                    if !welcomeGuideViewModel.isShowingGuide {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            animateLogo()
+                        }
                     }
                 }
                 
