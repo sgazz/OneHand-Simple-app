@@ -7,20 +7,20 @@ struct WelcomeGuideSection: Identifiable {
     
     static let sections: [WelcomeGuideSection] = [
         WelcomeGuideSection(
-            title: "Dobrodošli",
-            content: "Dobrodošli u OneHand Simple App! Naučite kako da koristite aplikaciju za interaktivno upravljanje slikama."
+            title: NSLocalizedString("welcome.section1.title", comment: ""),
+            content: NSLocalizedString("welcome.section1.content", comment: "")
         ),
         WelcomeGuideSection(
-            title: "Osnovne funkcije",
-            content: "Izaberite vašu dominantnu ruku i sliku iz galerije da biste započeli."
+            title: NSLocalizedString("welcome.section2.title", comment: ""),
+            content: NSLocalizedString("welcome.section2.content", comment: "")
         ),
         WelcomeGuideSection(
-            title: "Gestikulacije",
-            content: "Koristite nagibe uređaja za pomeranje slike. Za zumiranje i rotaciju koristite dugmad u radijalnom meniju."
+            title: NSLocalizedString("welcome.section3.title", comment: ""),
+            content: NSLocalizedString("welcome.section3.content", comment: "")
         ),
         WelcomeGuideSection(
-            title: "Saveti",
-            content: "Za najbolje rezultate, držite uređaj stabilno i koristite male, kontrolisane pokrete."
+            title: NSLocalizedString("welcome.section4.title", comment: ""),
+            content: NSLocalizedString("welcome.section4.content", comment: "")
         )
     ]
 } 
