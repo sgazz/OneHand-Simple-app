@@ -15,50 +15,62 @@ struct WelcomeScreenView: View {
         guard !isAnimating else { return }
         isAnimating = true
         
-        // Prva rotacija (yaw - oko Z ose, 360°)
-        withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
+        // 1. Yaw rotacija u smeru kazaljke (360°)
+        withAnimation(Animation.easeInOut(duration: 0.8).repeatCount(1, autoreverses: true)) {
             isLogoAnimating = true
         }
         
-        // Druga rotacija (pitch - oko X ose, 30°)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
-            withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
-                pitchAngle = 30
+        // 2. Pitch nagib napred (50°)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+            withAnimation(Animation.easeInOut(duration: 0.8).repeatCount(1, autoreverses: true)) {
+                pitchAngle = 50
             }
             
-            // Treća rotacija (pitch - oko X ose, -30°)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
-                withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
-                    pitchAngle = -30
+            // 3. Pitch nagib nazad (-50°)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                withAnimation(Animation.easeInOut(duration: 0.8).repeatCount(1, autoreverses: true)) {
+                    pitchAngle = -50
                 }
                 
-                // Četvrta rotacija (roll - oko Y ose, -30°)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
-                    withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
-                        rollAngle = -30
+                // 4. Pitch nagib početni položaj (0°)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                    withAnimation(Animation.easeInOut(duration: 0.5)) {
+                        pitchAngle = 0
                     }
                     
-                    // Peta rotacija (roll - oko Y ose, 30°)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
-                        withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
-                            rollAngle = 30
+                    // 5. Roll nagib levo (-50°)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        withAnimation(Animation.easeInOut(duration: 0.8).repeatCount(1, autoreverses: true)) {
+                            rollAngle = -50
                         }
                         
-                        // Šesta rotacija (yaw - oko Z ose, -360°)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
-                            withAnimation(Animation.easeInOut(duration: 1.5).repeatCount(1, autoreverses: true)) {
-                                reverseRotation = -360
+                        // 6. Roll nagib desno (50°)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                            withAnimation(Animation.easeInOut(duration: 0.8).repeatCount(1, autoreverses: true)) {
+                                rollAngle = 50
                             }
                             
-                            // Resetovanje svih vrednosti
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+                            // 7. Roll nagib početni položaj (0°)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
                                 withAnimation(Animation.easeInOut(duration: 0.5)) {
-                                    pitchAngle = 0
                                     rollAngle = 0
-                                    isLogoAnimating = false
-                                    reverseRotation = 0
                                 }
-                                isAnimating = false
+                                
+                                // 8. Yaw rotacija u suprotnom smeru (-360°)
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                    withAnimation(Animation.easeInOut(duration: 0.8).repeatCount(1, autoreverses: true)) {
+                                        reverseRotation = -360
+                                    }
+                                    
+                                    // Resetovanje svih vrednosti na kraju
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+                                        withAnimation(Animation.easeInOut(duration: 0.3)) {
+                                            isLogoAnimating = false
+                                            reverseRotation = 0
+                                        }
+                                        isAnimating = false
+                                    }
+                                }
                             }
                         }
                     }
