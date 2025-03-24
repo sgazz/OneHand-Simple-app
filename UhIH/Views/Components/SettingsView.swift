@@ -10,6 +10,12 @@ struct SettingsView: View {
     
     private let settingsBackgroundColor = Color(red: 0.06, green: 0.11, blue: 0.21)
     
+    // Font constants
+    private let titleFont: Font = .title3.weight(.semibold)
+    private let buttonFont: Font = .body.weight(.medium)
+    private let textFont: Font = .body
+    private let checkboxSize: CGFloat = 20
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -27,7 +33,7 @@ struct SettingsView: View {
                                     isPresented = false
                                 }) {
                                     Text("Done")
-                                        .font(.body.weight(.medium))
+                                        .font(buttonFont)
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
@@ -43,7 +49,7 @@ struct SettingsView: View {
                                     isPresented = false
                                 }) {
                                     Text("Done")
-                                        .font(.body.weight(.medium))
+                                        .font(buttonFont)
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
@@ -56,7 +62,7 @@ struct SettingsView: View {
                         
                         // Title
                         Text("Settings")
-                            .font(.title2.weight(.bold))
+                            .font(titleFont)
                             .foregroundStyle(.white)
                     }
                     
@@ -66,10 +72,10 @@ struct SettingsView: View {
                         VStack(spacing: 0) {
                             Picker("Handedness", selection: $viewModel.selectedHand) {
                                 Text("Left-handed")
-                                    .font(.body)
+                                    .font(textFont)
                                     .tag(ContentViewModel.Handedness.left)
                                 Text("Right-handed")
-                                    .font(.body)
+                                    .font(textFont)
                                     .tag(ContentViewModel.Handedness.right)
                             }
                             .pickerStyle(SegmentedPickerStyle())
@@ -99,7 +105,7 @@ struct SettingsView: View {
                                     shouldShowWelcomeGuide.toggle()
                                 }) {
                                     Text("Show Welcome Guide")
-                                        .font(.body)
+                                        .font(textFont)
                                         .foregroundStyle(settingsBackgroundColor)
                                 }
                             }
@@ -127,7 +133,7 @@ struct SettingsView: View {
                                     autoHideUI.toggle()
                                 }) {
                                     Text("Auto-hide Interface")
-                                        .font(.body)
+                                        .font(textFont)
                                         .foregroundStyle(settingsBackgroundColor)
                                 }
                             }
@@ -163,7 +169,7 @@ struct SettingsView: View {
     private func checkboxView(isChecked: Bool) -> some View {
         Image(systemName: isChecked ? "checkmark.square.fill" : "square")
             .foregroundStyle(isChecked ? .blue : .white)
-            .font(.system(size: 20))
+            .font(.system(size: checkboxSize))
     }
 }
 
