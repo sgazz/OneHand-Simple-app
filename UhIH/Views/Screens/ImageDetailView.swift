@@ -7,8 +7,7 @@ struct ImageDetailView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(uiColor: .systemBackground)
-                    .edgesIgnoringSafeArea(.all)
+                BackgroundGradientView()
                 
                 if let image = viewModel.selectedImage {
                     Image(uiImage: image)
