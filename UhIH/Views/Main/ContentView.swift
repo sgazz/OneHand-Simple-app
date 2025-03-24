@@ -6,6 +6,7 @@ struct ContentView: View {
     @StateObject private var welcomeGuideViewModel = WelcomeGuideViewModel()
     @State private var isUIHidden = false
     @State private var hideUITimer: Timer?
+    @AppStorage("autoHideUI") private var autoHideUI = true
     
     var body: some View {
         ZStack {
@@ -132,9 +133,11 @@ struct ContentView: View {
     
     private func startHideUITimer() {
         hideUITimer?.invalidate()
-        hideUITimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
-            withAnimation {
-                isUIHidden = true
+        if autoHideUI {
+            hideUITimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
+                withAnimation {
+                    isUIHidden = true
+                }
             }
         }
     }
@@ -143,7 +146,9 @@ struct ContentView: View {
         withAnimation {
             isUIHidden = false
         }
-        startHideUITimer()
+        if autoHideUI {
+            startHideUITimer()
+        }
     }
 }
 

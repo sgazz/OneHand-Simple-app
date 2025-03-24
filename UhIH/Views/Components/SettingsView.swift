@@ -6,7 +6,6 @@ struct SettingsView: View {
     @AppStorage("shouldShowWelcomeGuide") private var shouldShowWelcomeGuide = true
     @AppStorage("autoHideUI") private var autoHideUI = true
     @Environment(\.colorScheme) private var colorScheme
-    @State private var previousAutoHideState: Bool = true
     
     private let settingsBackgroundColor = Color(red: 0.06, green: 0.11, blue: 0.21)
     
@@ -29,7 +28,6 @@ struct SettingsView: View {
                         HStack {
                             if viewModel.selectedHand == .left {
                                 Button(action: {
-                                    autoHideUI = previousAutoHideState
                                     isPresented = false
                                 }) {
                                     Text("Done")
@@ -45,7 +43,6 @@ struct SettingsView: View {
                             } else {
                                 Spacer()
                                 Button(action: {
-                                    autoHideUI = previousAutoHideState
                                     isPresented = false
                                 }) {
                                     Text("Done")
@@ -86,24 +83,25 @@ struct SettingsView: View {
                         
                         // Preferences
                         VStack(spacing: 2) {
-                            ZStack {
-                                // Checkbox
-                                HStack {
-                                    if viewModel.selectedHand == .left {
-                                        checkboxView(isChecked: shouldShowWelcomeGuide)
-                                            .padding(.leading, 20)
-                                        Spacer()
-                                    } else {
-                                        Spacer()
-                                        checkboxView(isChecked: shouldShowWelcomeGuide)
-                                            .padding(.trailing, 20)
+                            // Show Welcome Guide
+                            Button(action: {
+                                shouldShowWelcomeGuide.toggle()
+                            }) {
+                                ZStack {
+                                    // Checkbox
+                                    HStack {
+                                        if viewModel.selectedHand == .left {
+                                            checkboxView(isChecked: shouldShowWelcomeGuide)
+                                                .padding(.leading, 20)
+                                            Spacer()
+                                        } else {
+                                            Spacer()
+                                            checkboxView(isChecked: shouldShowWelcomeGuide)
+                                                .padding(.trailing, 20)
+                                        }
                                     }
-                                }
-                                
-                                // Text
-                                Button(action: {
-                                    shouldShowWelcomeGuide.toggle()
-                                }) {
+                                    
+                                    // Text
                                     Text("Show Welcome Guide")
                                         .font(textFont)
                                         .foregroundStyle(settingsBackgroundColor)
@@ -114,24 +112,25 @@ struct SettingsView: View {
                             Divider()
                                 .background(.white.opacity(0.1))
                             
-                            ZStack {
-                                // Checkbox
-                                HStack {
-                                    if viewModel.selectedHand == .left {
-                                        checkboxView(isChecked: autoHideUI)
-                                            .padding(.leading, 20)
-                                        Spacer()
-                                    } else {
-                                        Spacer()
-                                        checkboxView(isChecked: autoHideUI)
-                                            .padding(.trailing, 20)
+                            // Auto-hide Interface
+                            Button(action: {
+                                autoHideUI.toggle()
+                            }) {
+                                ZStack {
+                                    // Checkbox
+                                    HStack {
+                                        if viewModel.selectedHand == .left {
+                                            checkboxView(isChecked: autoHideUI)
+                                                .padding(.leading, 20)
+                                            Spacer()
+                                        } else {
+                                            Spacer()
+                                            checkboxView(isChecked: autoHideUI)
+                                                .padding(.trailing, 20)
+                                        }
                                     }
-                                }
-                                
-                                // Text
-                                Button(action: {
-                                    autoHideUI.toggle()
-                                }) {
+                                    
+                                    // Text
                                     Text("Auto-hide Interface")
                                         .font(textFont)
                                         .foregroundStyle(settingsBackgroundColor)
@@ -158,11 +157,10 @@ struct SettingsView: View {
         .ignoresSafeArea()
         .transition(.move(edge: .bottom))
         .onAppear {
-            previousAutoHideState = autoHideUI
-            autoHideUI = false
+            NotificationCenter.default.post(name: NSNotification.Name("SettingsOpened"), object: nil)
         }
         .onDisappear {
-            autoHideUI = previousAutoHideState
+            NotificationCenter.default.post(name: NSNotification.Name("SettingsClosed"), object: nil)
         }
     }
     
