@@ -9,6 +9,9 @@ Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomo
 - Podrška za levoruke i desnoruke korisnike
 - Zumiranje i rotacija slike
 - Radijalni meni za brzi pristup funkcijama
+- Automatsko sakrivanje UI elemenata nakon 5 sekundi neaktivnosti
+- Fade animacije za glatke prelaze
+- Precizno praćenje granica pomeranja slike
 
 ## Tehnički detalji
 
@@ -16,6 +19,7 @@ Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomo
 - Koristi CoreMotion za praćenje pokreta
 - Minimalna veličina aplikacije (~1.4MB)
 - Podržava iOS 15.0 i novije verzije
+- Optimizovano za performanse i glatke animacije
 
 ## Instalacija
 
@@ -31,6 +35,9 @@ Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomo
 3. Izaberite sliku iz galerije
 4. Koristite nagibe uređaja za pomeranje slike
 5. Koristite gestikulacije za zumiranje i rotaciju
+6. UI elementi se automatski sakrivaju nakon 5 sekundi neaktivnosti
+7. Tap bilo gde na ekranu prikazuje UI elemente
+8. Koristite radijalni meni za brzi pristup funkcijama
 
 ## Razvoj
 
