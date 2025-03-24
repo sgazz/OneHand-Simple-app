@@ -6,6 +6,9 @@ struct SettingsView: View {
     @AppStorage("shouldShowWelcomeGuide") private var shouldShowWelcomeGuide = true
     @AppStorage("autoHideUI") private var autoHideUI = true
     @Environment(\.colorScheme) private var colorScheme
+    @State private var previousAutoHideState: Bool = true
+    
+    private let settingsBackgroundColor = Color(red: 0.06, green: 0.11, blue: 0.21)
     
     var body: some View {
         GeometryReader { geometry in
@@ -15,24 +18,46 @@ struct SettingsView: View {
                 // Settings panel
                 VStack(spacing: 32) {
                     // Header
-                    HStack {
+                    ZStack {
+                        // Done button
+                        HStack {
+                            if viewModel.selectedHand == .left {
+                                Button(action: {
+                                    autoHideUI = previousAutoHideState
+                                    isPresented = false
+                                }) {
+                                    Text("Done")
+                                        .font(.body.weight(.medium))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(settingsBackgroundColor)
+                                        .cornerRadius(4)
+                                }
+                                .padding(.leading, 20)
+                                Spacer()
+                            } else {
+                                Spacer()
+                                Button(action: {
+                                    autoHideUI = previousAutoHideState
+                                    isPresented = false
+                                }) {
+                                    Text("Done")
+                                        .font(.body.weight(.medium))
+                                        .foregroundStyle(.white)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(settingsBackgroundColor)
+                                        .cornerRadius(4)
+                                }
+                                .padding(.trailing, 20)
+                            }
+                        }
+                        
+                        // Title
                         Text("Settings")
                             .font(.title2.weight(.bold))
                             .foregroundStyle(.white)
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            isPresented = false
-                        }) {
-                            Text("Done")
-                                .font(.body.weight(.medium))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .background(Color(red: 0.06, green: 0.11, blue: 0.21))
-                                .cornerRadius(4)
-                        }
                     }
                     
                     // Options Group
@@ -40,68 +65,73 @@ struct SettingsView: View {
                         // Handedness Picker
                         VStack(spacing: 0) {
                             Picker("Handedness", selection: $viewModel.selectedHand) {
-                                Text("Left-handed").tag(ContentViewModel.Handedness.left)
-                                Text("Right-handed").tag(ContentViewModel.Handedness.right)
+                                Text("Left-handed")
+                                    .font(.body)
+                                    .tag(ContentViewModel.Handedness.left)
+                                Text("Right-handed")
+                                    .font(.body)
+                                    .tag(ContentViewModel.Handedness.right)
                             }
                             .pickerStyle(SegmentedPickerStyle())
+                            .tint(settingsBackgroundColor)
                         }
                         .padding(12)
                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
                         
                         // Preferences
                         VStack(spacing: 2) {
-                            HStack {
-                                if viewModel.selectedHand == .left {
-                                    checkboxView(isChecked: shouldShowWelcomeGuide)
+                            ZStack {
+                                // Checkbox
+                                HStack {
+                                    if viewModel.selectedHand == .left {
+                                        checkboxView(isChecked: shouldShowWelcomeGuide)
+                                            .padding(.leading, 20)
+                                        Spacer()
+                                    } else {
+                                        Spacer()
+                                        checkboxView(isChecked: shouldShowWelcomeGuide)
+                                            .padding(.trailing, 20)
+                                    }
                                 }
                                 
+                                // Text
                                 Button(action: {
                                     shouldShowWelcomeGuide.toggle()
                                 }) {
-                                    VStack(spacing: 2) {
-                                        Text("Welcome Guide")
-                                            .foregroundStyle(.white)
-                                        Text("Show initial setup guide")
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity)
-                                
-                                if viewModel.selectedHand == .right {
-                                    checkboxView(isChecked: shouldShowWelcomeGuide)
+                                    Text("Show Welcome Guide")
+                                        .font(.body)
+                                        .foregroundStyle(settingsBackgroundColor)
                                 }
                             }
                             .padding(.vertical, 12)
-                            .padding(.horizontal)
                             
                             Divider()
                                 .background(.white.opacity(0.1))
                             
-                            HStack {
-                                if viewModel.selectedHand == .left {
-                                    checkboxView(isChecked: autoHideUI)
+                            ZStack {
+                                // Checkbox
+                                HStack {
+                                    if viewModel.selectedHand == .left {
+                                        checkboxView(isChecked: autoHideUI)
+                                            .padding(.leading, 20)
+                                        Spacer()
+                                    } else {
+                                        Spacer()
+                                        checkboxView(isChecked: autoHideUI)
+                                            .padding(.trailing, 20)
+                                    }
                                 }
                                 
+                                // Text
                                 Button(action: {
                                     autoHideUI.toggle()
                                 }) {
-                                    VStack(spacing: 2) {
-                                        Text("Auto-hide Interface")
-                                            .foregroundStyle(.white)
-                                        Text("Hide controls when inactive")
-                                            .font(.caption2)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity)
-                                
-                                if viewModel.selectedHand == .right {
-                                    checkboxView(isChecked: autoHideUI)
+                                    Text("Auto-hide Interface")
+                                        .font(.body)
+                                        .foregroundStyle(settingsBackgroundColor)
                                 }
                             }
                             .padding(.vertical, 12)
-                            .padding(.horizontal)
                         }
                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
                     }
@@ -111,7 +141,7 @@ struct SettingsView: View {
             }
             .frame(maxWidth: .infinity)
             .background {
-                Color(red: 0.06, green: 0.11, blue: 0.21)
+                settingsBackgroundColor
                     .opacity(0.85)
                     .background(.thinMaterial)
             }
@@ -120,6 +150,13 @@ struct SettingsView: View {
         }
         .ignoresSafeArea()
         .transition(.move(edge: .bottom))
+        .onAppear {
+            previousAutoHideState = autoHideUI
+            autoHideUI = false
+        }
+        .onDisappear {
+            autoHideUI = previousAutoHideState
+        }
     }
     
     private func checkboxView(isChecked: Bool) -> some View {
