@@ -105,6 +105,24 @@ struct ContentView: View {
             ) { _ in
                 showUI()
             }
+            
+            // Dodajemo observer za Settings notifikacije
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("SettingsOpened"),
+                object: nil,
+                queue: .main
+            ) { _ in
+                hideUITimer?.invalidate()
+                hideUITimer = nil
+            }
+            
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("SettingsClosed"),
+                object: nil,
+                queue: .main
+            ) { _ in
+                startHideUITimer()
+            }
         }
         .contentShape(Rectangle()) // Ovo omogućava da tap radi na celom ekranu
         .onTapGesture {

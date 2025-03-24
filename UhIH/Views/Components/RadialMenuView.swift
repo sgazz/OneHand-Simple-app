@@ -3,6 +3,7 @@ import SwiftUI
 struct RadialMenuView: View {
     @State private var isExpanded = false
     @State private var rotation: Double = 0
+    @State private var showSettings = false
     @ObservedObject var viewModel: ContentViewModel
     
     // Konfiguracija dugmadi
@@ -31,7 +32,8 @@ struct RadialMenuView: View {
                         rotation: rotation,
                         selectedHand: viewModel.selectedHand ?? .right,
                         viewModel: viewModel,
-                        onTap: { showUI() }
+                        onTap: { showUI() },
+                        showSettings: $showSettings
                     )
                 }
                 
@@ -71,6 +73,19 @@ struct RadialMenuView: View {
                 print("Distance from bottom: 230.0")
             }
         }
+        .overlay {
+            if showSettings {
+                SettingsView(viewModel: viewModel, isPresented: $showSettings)
+                    .transition(.opacity)
+            }
+        }
+        .onChange(of: showSettings) { oldValue, newValue in
+            if newValue {
+                NotificationCenter.default.post(name: NSNotification.Name("SettingsOpened"), object: nil)
+            } else {
+                NotificationCenter.default.post(name: NSNotification.Name("SettingsClosed"), object: nil)
+            }
+        }
     }
     
     private func showUI() {
@@ -95,6 +110,7 @@ struct MenuButton: View {
     let selectedHand: ContentViewModel.Handedness
     @ObservedObject var viewModel: ContentViewModel
     let onTap: () -> Void
+    @Binding var showSettings: Bool
     
     var body: some View {
         Image(systemName: item.icon)
@@ -114,6 +130,8 @@ struct MenuButton: View {
                     viewModel.resetImage()
                 } else if item.icon == "move.3d" {
                     viewModel.toggleMotionTracking()
+                } else if item.icon == "slider.horizontal.3" {
+                    showSettings = true
                 }
             }
             .simultaneousGesture(
