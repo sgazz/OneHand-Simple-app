@@ -3,6 +3,7 @@ import PhotosUI
 
 struct ImageDetailView: View {
     @ObservedObject var viewModel: ContentViewModel
+    @State private var imageOpacity: Double = 0
     
     var body: some View {
         GeometryReader { geometry in
@@ -16,6 +17,12 @@ struct ImageDetailView: View {
                         .scaleEffect(viewModel.scale)
                         .rotationEffect(.degrees(viewModel.rotation))
                         .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
+                        .opacity(imageOpacity)
+                        .onAppear {
+                            withAnimation(.easeIn(duration: 0.8)) {
+                                imageOpacity = 1
+                            }
+                        }
                 }
                 
                 VStack {
@@ -52,6 +59,14 @@ struct ImageDetailView: View {
                             .cornerRadius(15)
                     }
                     .padding(.bottom, 50)
+                }
+            }
+        }
+        .onChange(of: viewModel.selectedImage) { oldValue, newValue in
+            imageOpacity = 0 // Resetujemo opacity na 0
+            if newValue != nil {
+                withAnimation(.easeIn(duration: 0.8)) {
+                    imageOpacity = 1
                 }
             }
         }
