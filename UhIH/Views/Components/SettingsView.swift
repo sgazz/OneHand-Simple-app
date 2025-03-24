@@ -138,6 +138,7 @@ struct SettingsView: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom, geometry.safeAreaInsets.bottom + 16)
+                .offset(y: -100)
             }
             .frame(maxWidth: .infinity)
             .background {
