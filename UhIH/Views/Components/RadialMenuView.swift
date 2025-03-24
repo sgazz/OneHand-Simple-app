@@ -41,13 +41,19 @@ struct RadialMenuView: View {
                         rotation += 45
                     }
                 }) {
-                    Image(systemName: isExpanded ? "xmark" : "plus")
-                        .font(.title2)
-                        .foregroundColor(.white)
-                        .frame(width: 70, height: 70)
-                        .background(Color.blue)
-                        .clipShape(Circle())
-                        .shadow(radius: 4)
+                    ZStack {
+                        Circle()
+                            .fill(Color.blue)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                            )
+                        
+                        Image(systemName: isExpanded ? "xmark" : "plus")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                    }
+                    .frame(width: 70, height: 70)
                 }
                 .rotationEffect(.degrees(rotation))
             }
@@ -90,7 +96,11 @@ struct MenuButton: View {
             .frame(width: index == 2 ? 45 : 60, height: index == 2 ? 45 : 60)
             .background(item.color)
             .clipShape(Circle())
-            .shadow(radius: 4)
+            .overlay(
+                Circle()
+                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 3)
             .onTapGesture {
                 if item.icon == "arrow.counterclockwise.circle" {
                     viewModel.resetImage()
@@ -143,6 +153,15 @@ struct MenuButton: View {
                     y: isExpanded ? calculateOffset().y : 0)
             .opacity(isExpanded ? 1 : 0)
             .scaleEffect(isExpanded ? 1 : 0.1)
+            .animation(
+                .spring(
+                    response: 0.5,
+                    dampingFraction: 0.8,
+                    blendDuration: 0.3
+                )
+                .delay(Double(index) * 0.03),
+                value: isExpanded
+            )
     }
     
     private func calculateOffset() -> CGPoint {
