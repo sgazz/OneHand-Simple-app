@@ -30,7 +30,8 @@ struct RadialMenuView: View {
                         totalItems: menuItems.count,
                         rotation: rotation,
                         selectedHand: viewModel.selectedHand ?? .right,
-                        viewModel: viewModel
+                        viewModel: viewModel,
+                        onTap: { showUI() }
                     )
                 }
                 
@@ -39,6 +40,7 @@ struct RadialMenuView: View {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         isExpanded.toggle()
                         rotation += 45
+                        showUI()
                     }
                 }) {
                     ZStack {
@@ -70,6 +72,10 @@ struct RadialMenuView: View {
             }
         }
     }
+    
+    private func showUI() {
+        NotificationCenter.default.post(name: NSNotification.Name("ResetUITimer"), object: nil)
+    }
 }
 
 // Model za menu item
@@ -88,6 +94,7 @@ struct MenuButton: View {
     let rotation: Double
     let selectedHand: ContentViewModel.Handedness
     @ObservedObject var viewModel: ContentViewModel
+    let onTap: () -> Void
     
     var body: some View {
         Image(systemName: item.icon)
@@ -102,6 +109,7 @@ struct MenuButton: View {
             )
             .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 3)
             .onTapGesture {
+                onTap()
                 if item.icon == "arrow.counterclockwise.circle" {
                     viewModel.resetImage()
                 } else if item.icon == "move.3d" {
@@ -111,6 +119,7 @@ struct MenuButton: View {
             .simultaneousGesture(
                 TapGesture(count: 2)
                     .onEnded { _ in
+                        onTap()
                         switch item.icon {
                         case "plus.magnifyingglass":
                             viewModel.zoomToMax()
@@ -128,6 +137,7 @@ struct MenuButton: View {
             .simultaneousGesture(
                 LongPressGesture(minimumDuration: 0.1)
                     .onEnded { _ in
+                        onTap()
                         switch item.icon {
                         case "plus.magnifyingglass":
                             viewModel.startContinuousZoomIn()
@@ -145,6 +155,7 @@ struct MenuButton: View {
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
                     .onEnded { _ in
+                        onTap()
                         viewModel.stopZooming()
                         viewModel.stopRotation()
                     }
