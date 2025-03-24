@@ -8,13 +8,13 @@ struct RadialMenuView: View {
     // Konfiguracija dugmadi
     private var menuItems: [RadialMenuItem] {
         [
-            RadialMenuItem(icon: "minus.magnifyingglass", color: .red),
-            RadialMenuItem(icon: "plus.magnifyingglass", color: .blue),
-            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .green),
-            RadialMenuItem(icon: "arrow.clockwise", color: .purple),
-            RadialMenuItem(icon: "arrow.counterclockwise", color: .cyan),
-            RadialMenuItem(icon: "move.3d", color: .orange),
-            RadialMenuItem(icon: "slider.horizontal.3", color: .orange)
+            RadialMenuItem(icon: "minus.magnifyingglass", color: .white.opacity(0.2)),
+            RadialMenuItem(icon: "plus.magnifyingglass", color: .white.opacity(0.2)),
+            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .white.opacity(0.2)),
+            RadialMenuItem(icon: "arrow.clockwise", color: .white.opacity(0.2)),
+            RadialMenuItem(icon: "arrow.counterclockwise", color: .white.opacity(0.2)),
+            RadialMenuItem(icon: "move.3d", color: .white.opacity(0.2)),
+            RadialMenuItem(icon: "slider.horizontal.3", color: .white.opacity(0.2))
         ]
     }
     
@@ -43,7 +43,7 @@ struct RadialMenuView: View {
                 }) {
                     ZStack {
                         Circle()
-                            .fill(Color.blue)
+                            .fill(Color.white.opacity(0.2))
                             .overlay(
                                 Circle()
                                     .stroke(Color.white.opacity(0.3), lineWidth: 1)
@@ -151,7 +151,6 @@ struct MenuButton: View {
             )
             .offset(x: isExpanded ? calculateOffset().x : 0,
                     y: isExpanded ? calculateOffset().y : 0)
-            .opacity(isExpanded ? 1 : 0)
             .scaleEffect(isExpanded ? 1 : 0.1)
             .animation(
                 .spring(
