@@ -15,17 +15,41 @@ struct ContentView: View {
     }
     
     var body: some View {
-        ZStack {
-            // Gradijentna pozadina
-            BackgroundGradientView()
+        GeometryReader { geometry in
+            let isLandscape = geometry.size.width > geometry.size.height
             
-            if welcomeGuideViewModel.isShowingGuide {
-                WelcomeGuideView(viewModel: welcomeGuideViewModel)
-            } else {
+            ZStack {
+                // Gradijentna pozadina
+                BackgroundGradientView()
+                
                 if !viewModel.hasSelectedImage {
-                    WelcomeScreenView(viewModel: viewModel, welcomeGuideViewModel: welcomeGuideViewModel)
-                        .id(welcomeGuideViewModel.isShowingGuide)
-                } else {
+                    if welcomeGuideViewModel.isShowingGuide {
+                        // Kada je guide aktivan
+                        if isLandscape {
+                            // U landscape modu prikazujemo WelcomeScreenView samo ako ruka nije izabrana
+                            if viewModel.selectedHand == nil {
+                                WelcomeScreenView(viewModel: viewModel, welcomeGuideViewModel: welcomeGuideViewModel)
+                            }
+                        }
+                    } else {
+                        // Kada guide nije aktivan, uvek prikazujemo WelcomeScreenView
+                        WelcomeScreenView(viewModel: viewModel, welcomeGuideViewModel: welcomeGuideViewModel)
+                    }
+                }
+                
+                if welcomeGuideViewModel.isShowingGuide {
+                    if isLandscape {
+                        // U landscape modu prikazujemo guide samo ako je izabrana ruka
+                        if viewModel.selectedHand != nil {
+                            WelcomeGuideView(viewModel: welcomeGuideViewModel)
+                        }
+                    } else {
+                        // U portrait modu uvek prikazujemo guide
+                        WelcomeGuideView(viewModel: welcomeGuideViewModel)
+                    }
+                }
+                
+                if viewModel.hasSelectedImage {
                     ZStack {
                         // Slika ostaje vidljiva
                         if let image = viewModel.selectedImage {
