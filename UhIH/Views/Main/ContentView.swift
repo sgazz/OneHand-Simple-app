@@ -55,20 +55,28 @@ struct ContentView: View {
                             Spacer()
                             
                             // Dugme za izbor slike
-                            PhotosPicker(selection: $viewModel.selectedItems,
-                                       maxSelectionCount: 1,
-                                       matching: .images) {
-                                Text("Choose Image")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(width: 200, height: 50)
-                                    .background(Color.blue)
-                                    .cornerRadius(15)
+                            GeometryReader { geometry in
+                                PhotosPicker(selection: $viewModel.selectedItems,
+                                           maxSelectionCount: 1,
+                                           matching: .images) {
+                                    Text("Choose Image")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .frame(width: 200, height: 50)
+                                        .background(Color.blue)
+                                        .cornerRadius(15)
+                                }
+                                .position(
+                                    x: UIDevice.current.orientation.isLandscape ?
+                                        (viewModel.selectedHand == .left ? 140 : geometry.size.width - 140) :
+                                        geometry.size.width / 2,
+                                    y: geometry.size.height - 75
+                                )
+                                .onTapGesture {
+                                    showUI()
+                                }
                             }
-                            .padding(.bottom, 50)
-                            .onTapGesture {
-                                showUI()
-                            }
+                            .frame(height: 100)
                         }
                         .opacity(isUIHidden ? 0 : 1)
                         .animation(.easeOut(duration: 0.3), value: isUIHidden)
