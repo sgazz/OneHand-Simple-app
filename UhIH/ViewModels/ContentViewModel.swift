@@ -272,25 +272,37 @@ class ContentViewModel: ObservableObject {
         // Pomeranje počinje tek kada je slika zoomirana (scale > 1.0)
         let motionFactor: CGFloat = scale > 1.0 ? (1.0 + (scale - 1.0) * (4.0 / 9.0)) : 0.0
         
-        // Konvertujemo nagib u pomeranje
-        let deltaX = CGFloat(roll) * motionFactor
-        let deltaY = CGFloat(pitch) * motionFactor
+        // Konvertujemo nagib u pomeranje sa manjom osetljivošću
+        let deltaX = CGFloat(roll) * motionFactor * 15 // Smanjili smo sa 25 na 15
+        let deltaY = CGFloat(pitch) * motionFactor * 15 // Smanjili smo sa 25 na 15
         
-        // Proveravamo granice i ažuriramo poziciju
+        // Proveravamo granice i ažuriramo poziciju sa glatkom animacijom
         if let maxOffset = calculateMaxOffset() {
             // Računamo potencijalnu novu poziciju
             let potentialX = imageOffset.x + deltaX
             let potentialY = imageOffset.y + deltaY
             
-            // Ograničavamo pomeranje na maksimalne vrednosti
-            imageOffset.x = max(min(potentialX, maxOffset.x), -maxOffset.x)
-            imageOffset.y = max(min(potentialY, maxOffset.y), -maxOffset.y)
+            // Ograničavamo pomeranje na maksimalne vrednosti sa glatkim prelazima
+            withAnimation(.interactiveSpring(
+                response: 0.8,           // Povećali smo sa 0.5 na 0.8 za sporije kretanje
+                dampingFraction: 0.85,   // Povećali smo sa 0.8 na 0.85 za glatkije zaustavljanje
+                blendDuration: 0.4       // Povećali smo sa 0.3 na 0.4 za glatkije prelaze
+            )) {
+                imageOffset.x = max(min(potentialX, maxOffset.x), -maxOffset.x)
+                imageOffset.y = max(min(potentialY, maxOffset.y), -maxOffset.y)
+            }
         } else {
             // Ako nemamo granice, ažuriramo poziciju normalno
-            imageOffset = CGPoint(
-                x: imageOffset.x + deltaX,
-                y: imageOffset.y + deltaY
-            )
+            withAnimation(.interactiveSpring(
+                response: 0.8,           // Povećali smo sa 0.5 na 0.8 za sporije kretanje
+                dampingFraction: 0.85,   // Povećali smo sa 0.8 na 0.85 za glatkije zaustavljanje
+                blendDuration: 0.4       // Povećali smo sa 0.3 na 0.4 za glatkije prelaze
+            )) {
+                imageOffset = CGPoint(
+                    x: imageOffset.x + deltaX,
+                    y: imageOffset.y + deltaY
+                )
+            }
         }
         
         // Debug informacije (smanjena frekvenca)

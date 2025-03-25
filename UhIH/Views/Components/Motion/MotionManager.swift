@@ -1,6 +1,7 @@
 import Foundation
 import CoreMotion
 import Combine
+import QuartzCore
 
 class MotionManager: ObservableObject {
     private let motionManager = CMMotionManager()
@@ -15,11 +16,11 @@ class MotionManager: ObservableObject {
     private var baselineRoll: Double = 0.0
     
     // Mrtva zona (u radijanima)
-    private let deadZone: Double = 0.1 // približno 5.7 stepeni
+    private let deadZone: Double = 0.05 // približno 2.8 stepeni
     
     // Maksimalne vrednosti (u radijanima)
-    private let maxPitch: Double = 1.0 // približno 57 stepeni
-    private let maxRoll: Double = 1.0  // približno 57 stepeni
+    private let maxPitch: Double = 0.5 // približno 28.6 stepeni
+    private let maxRoll: Double = 0.5  // približno 28.6 stepeni
     
     // Status praćenja pokreta
     @Published var isTracking: Bool = false
@@ -29,6 +30,10 @@ class MotionManager: ObservableObject {
     private var bounceThreshold: Double = 0.1
     private var lastBounceTime: Date?
     private let bounceInterval: TimeInterval = 0.5
+    
+    // Optimizacija performansi
+    private var lastUpdateTime: TimeInterval = 0
+    private let minUpdateInterval: TimeInterval = 1.0 / 60.0 // 60fps
     
     init() {
         setupMotionManager()
@@ -43,6 +48,7 @@ class MotionManager: ObservableObject {
         baselinePitch = motion.attitude.pitch
         baselineRoll = motion.attitude.roll
         isInDeadZone = true
+        lastUpdateTime = CACurrentMediaTime()
     }
     
     func startTracking() {
@@ -53,6 +59,11 @@ class MotionManager: ObservableObject {
             guard let self = self,
                   let motion = motion,
                   error == nil else { return }
+            
+            // Optimizacija performansi - proveravamo minimalni interval između ažuriranja
+            let currentTime = CACurrentMediaTime()
+            guard currentTime - self.lastUpdateTime >= self.minUpdateInterval else { return }
+            self.lastUpdateTime = currentTime
             
             // Ako još nismo kalibrisani, postavljamo baseline
             if !self.isTracking {
