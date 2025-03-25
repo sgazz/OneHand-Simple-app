@@ -118,15 +118,27 @@ struct WelcomeGuideView: View {
                             VStack(spacing: AppTheme.Layout.spacingMedium) {
                                 // Checkbox za "Always show"
                                 HStack(spacing: AppTheme.Layout.spacingSmall) {
-                                    Image(systemName: viewModel.showAlways ? "checkmark.square.fill" : "square")
-                                        .font(.system(size: 20))
-                                        .foregroundColor(AppTheme.Colors.textPrimary)
-                                        .onTapGesture {
-                                            viewModel.showAlways.toggle()
-                                        }
-                                    Text(LocalizedStringKey("welcome.always_show"))
-                                        .font(AppTheme.Typography.caption)
-                                        .foregroundColor(AppTheme.Colors.textSecondary)
+                                    if viewModel.selectedHand == .right {
+                                        Text(LocalizedStringKey("welcome.always_show"))
+                                            .font(AppTheme.Typography.caption)
+                                            .foregroundColor(AppTheme.Colors.textSecondary)
+                                        Image(systemName: viewModel.showAlways ? "checkmark.square.fill" : "square")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(AppTheme.Colors.textPrimary)
+                                            .onTapGesture {
+                                                viewModel.showAlways.toggle()
+                                            }
+                                    } else {
+                                        Image(systemName: viewModel.showAlways ? "checkmark.square.fill" : "square")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(AppTheme.Colors.textPrimary)
+                                            .onTapGesture {
+                                                viewModel.showAlways.toggle()
+                                            }
+                                        Text(LocalizedStringKey("welcome.always_show"))
+                                            .font(AppTheme.Typography.caption)
+                                            .foregroundColor(AppTheme.Colors.textSecondary)
+                                    }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 
@@ -246,15 +258,27 @@ struct WelcomeGuideView: View {
             
             // Checkbox for "Always show"
             HStack(spacing: AppTheme.Layout.spacingSmall) {
-                Image(systemName: viewModel.showAlways ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 20))
-                    .foregroundColor(AppTheme.Colors.textPrimary)
-                    .onTapGesture {
-                        viewModel.showAlways.toggle()
-                    }
-                Text(LocalizedStringKey("welcome.always_show"))
-                    .font(AppTheme.Typography.caption)
-                    .foregroundColor(AppTheme.Colors.textSecondary)
+                if viewModel.selectedHand == .right {
+                    Text(LocalizedStringKey("welcome.always_show"))
+                        .font(AppTheme.Typography.caption)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                    Image(systemName: viewModel.showAlways ? "checkmark.square.fill" : "square")
+                        .font(.system(size: 20))
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                        .onTapGesture {
+                            viewModel.showAlways.toggle()
+                        }
+                } else {
+                    Image(systemName: viewModel.showAlways ? "checkmark.square.fill" : "square")
+                        .font(.system(size: 20))
+                        .foregroundColor(AppTheme.Colors.textPrimary)
+                        .onTapGesture {
+                            viewModel.showAlways.toggle()
+                        }
+                    Text(LocalizedStringKey("welcome.always_show"))
+                        .font(AppTheme.Typography.caption)
+                        .foregroundColor(AppTheme.Colors.textSecondary)
+                }
             }
             .padding(.bottom, AppTheme.Layout.spacingLarge)
             
