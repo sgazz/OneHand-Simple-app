@@ -3,10 +3,16 @@ import PhotosUI
 
 struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
-    @StateObject private var welcomeGuideViewModel = WelcomeGuideViewModel()
+    @StateObject private var welcomeGuideViewModel: WelcomeGuideViewModel
     @State private var isUIHidden = false
     @State private var hideUITimer: Timer?
     @AppStorage("autoHideUI") private var autoHideUI = true
+    
+    init() {
+        let contentViewModel = ContentViewModel()
+        _viewModel = StateObject(wrappedValue: contentViewModel)
+        _welcomeGuideViewModel = StateObject(wrappedValue: WelcomeGuideViewModel(contentViewModel: contentViewModel))
+    }
     
     var body: some View {
         ZStack {

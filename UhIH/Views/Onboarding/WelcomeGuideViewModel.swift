@@ -5,6 +5,18 @@ class WelcomeGuideViewModel: ObservableObject {
     @Published var isShowingGuide: Bool = false
     @Published var showAlways: Bool = true
     
+    // Reference to ContentViewModel
+    private let contentViewModel: ContentViewModel
+    
+    init(contentViewModel: ContentViewModel) {
+        self.contentViewModel = contentViewModel
+    }
+    
+    var selectedHand: ContentViewModel.Handedness? {
+        get { contentViewModel.selectedHand }
+        set { contentViewModel.selectedHand = newValue }
+    }
+    
     func showGuide() {
         isShowingGuide = shouldShowWelcomeGuide
     }
