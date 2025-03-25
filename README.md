@@ -12,6 +12,8 @@ Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomo
 - Automatsko sakrivanje UI elemenata nakon 5 sekundi neaktivnosti
 - Fade animacije za glatke prelaze
 - Precizno praćenje granica pomeranja slike
+- Intuitivan Welcome Guide sa prilagođenim UI za obe orijentacije
+- Optimizovan tok za izbor dominantne ruke
 
 ## Tehnički detalji
 
@@ -20,6 +22,7 @@ Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomo
 - Minimalna veličina aplikacije (~1.4MB)
 - Podržava iOS 15.0 i novije verzije
 - Optimizovano za performanse i glatke animacije
+- Adaptivni UI za portrait i landscape orijentacije
 
 ## Instalacija
 
@@ -31,13 +34,14 @@ Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomo
 ## Korišćenje
 
 1. Pokrenite aplikaciju
-2. Izaberite vašu dominantnu ruku
-3. Izaberite sliku iz galerije
-4. Koristite nagibe uređaja za pomeranje slike
-5. Koristite gestikulacije za zumiranje i rotaciju
-6. UI elementi se automatski sakrivaju nakon 5 sekundi neaktivnosti
-7. Tap bilo gde na ekranu prikazuje UI elemente
-8. Koristite radijalni meni za brzi pristup funkcijama
+2. U landscape modu, prvo izaberite dominantnu ruku
+3. Pratite Welcome Guide za upoznavanje sa funkcijama
+4. Izaberite sliku iz galerije
+5. Koristite nagibe uređaja za pomeranje slike
+6. Koristite gestikulacije za zumiranje i rotaciju
+7. UI elementi se automatski sakrivaju nakon 5 sekundi neaktivnosti
+8. Tap bilo gde na ekranu prikazuje UI elemente
+9. Koristite radijalni meni za brzi pristup funkcijama
 
 ## Razvoj
 
@@ -46,6 +50,7 @@ Projekat je organizovan u sledeće direktorijume:
 - `ViewModels/` - View modeli i logika
 - `Components/` - Pregradne komponente
 - `Screens/` - Glavni ekrani aplikacije
+- `Onboarding/` - Welcome Guide i onboarding komponente
 
 ## Licenca
 
