@@ -50,7 +50,7 @@ struct RadialMenuView: View {
                             .fill(Color.white.opacity(0.2))
                             .overlay(
                                 Circle()
-                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                    .stroke(Color.white.opacity(0.6), lineWidth: 1)
                             )
                         
                         Image(systemName: isExpanded ? "xmark" : "plus")
@@ -121,7 +121,7 @@ struct MenuButton: View {
             .clipShape(Circle())
             .overlay(
                 Circle()
-                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    .stroke(Color.white.opacity(0.6), lineWidth: 1)
             )
             .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 3)
             .onTapGesture {

@@ -194,7 +194,7 @@ struct WelcomeScreenView: View {
                                maxSelectionCount: 1,
                                matching: .images) {
                         Text(LocalizedStringKey("welcome_screen.choose_image"))
-                            .font(.custom("SF Pro Display", size: 20, relativeTo: .headline))
+                            .font(.custom("SF Pro Display", size: 17, relativeTo: .headline))
                             .foregroundColor(AppTheme.Colors.buttonText)
                             .frame(width: AppTheme.Layout.buttonWidthLarge,
                                    height: 44)
@@ -312,7 +312,7 @@ struct WelcomeScreenView: View {
                                    maxSelectionCount: 1,
                                    matching: .images) {
                             Text(LocalizedStringKey("welcome_screen.choose_image"))
-                                .font(.custom("SF Pro Display", size: 20, relativeTo: .headline))
+                                .font(.custom("SF Pro Display", size: 17, relativeTo: .headline))
                                 .foregroundColor(AppTheme.Colors.buttonText)
                                 .frame(width: geometry.size.width < 400 ? AppTheme.Layout.buttonWidthLarge : AppTheme.Layout.buttonWidthLarge * 1.3, 
                                        height: geometry.size.height < 500 ? 44 : AppTheme.Layout.buttonHeight)
@@ -361,10 +361,17 @@ struct HandSelectionButton: View {
             }
         }) {
             HStack(spacing: AppTheme.Layout.spacingSmall) {
-                Image(systemName: icon)
-                    .font(.system(size: 20))
-                    .symbolEffect(.bounce, value: isSelected)
-                Text(title)
+                if icon.contains("left") {
+                    Image(systemName: icon)
+                        .font(.system(size: 20))
+                        .symbolEffect(.bounce, value: isSelected)
+                    Text(title)
+                } else {
+                    Text(title)
+                    Image(systemName: icon)
+                        .font(.system(size: 20))
+                        .symbolEffect(.bounce, value: isSelected)
+                }
             }
             .font(AppTheme.Typography.headline)
             .foregroundColor(AppTheme.Colors.buttonText)
