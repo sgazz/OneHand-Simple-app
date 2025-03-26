@@ -27,16 +27,9 @@ class ContentViewModel: ObservableObject {
     let accelerationFactor: CGFloat = 1.2 // Faktor ubrzanja
     
     private let motionManager = MotionManager()
-    private var motionBoundary: MotionBoundary?
     
     // Set za čuvanje Combine subscriptions
     private var cancellables = Set<AnyCancellable>()
-    
-    // Feedback generator za bounce
-    private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-    
-    private var lastDebugPrintTime: TimeInterval = 0
-    private let debugPrintInterval: TimeInterval = 0.5 // Prikazujemo podatke svakih 500ms
     
     enum Handedness {
         case left
@@ -70,9 +63,6 @@ class ContentViewModel: ObservableObject {
         
         scale = min(scale + currentZoomSpeed * CGFloat(deltaTime * 60), maxScale)
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
-        
-        // Ažuriramo boundary kada se promeni zoom
-        updateMotionBoundary()
     }
     
     @objc private func handleZoomOut() {
@@ -84,45 +74,6 @@ class ContentViewModel: ObservableObject {
         
         scale = max(scale - currentZoomSpeed * CGFloat(deltaTime * 60), minScale)
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
-        
-        // Ažuriramo boundary kada se promeni zoom
-        updateMotionBoundary()
-    }
-    
-    private func updateMotionBoundary() {
-        guard let image = selectedImage else { return }
-        
-        // Ažuriramo boundary sa novom skalom
-        motionBoundary = MotionBoundary(
-            imageSize: image.size,
-            viewSize: UIScreen.main.bounds.size,
-            scale: scale
-        )
-        
-        // Ažuriramo debug informacije
-        if let scaledSize = calculateImageSize(at: scale),
-           let maxOffset = calculateMaxOffset() {
-            let screenSize = UIScreen.main.bounds.size
-            let distanceFromLeft = maxOffset.x + imageOffset.x
-            let distanceFromRight = maxOffset.x - imageOffset.x
-            let distanceFromTop = maxOffset.y + imageOffset.y
-            let distanceFromBottom = maxOffset.y - imageOffset.y
-            
-            print("""
-            ----------------------------------------
-            ZOOM PROMENA: \(String(format: "%.1f", scale))x
-            ----------------------------------------
-            Ekran: \(Int(screenSize.width))×\(Int(screenSize.height))
-            Slika: \(Int(scaledSize.width))×\(Int(scaledSize.height))
-            ----------------------------------------
-            Od ivica:
-            Levo: \(String(format: "%.1f", distanceFromLeft))px
-            Desno: \(String(format: "%.1f", distanceFromRight))px
-            Gore: \(String(format: "%.1f", distanceFromTop))px
-            Dole: \(String(format: "%.1f", distanceFromBottom))px
-            ----------------------------------------
-            """)
-        }
     }
     
     func stopZooming() {
@@ -235,14 +186,7 @@ class ContentViewModel: ObservableObject {
     }
     
     private func startMotionTracking() {
-        guard let image = selectedImage else { return }
-        
-        // Inicijalizujemo boundary sa trenutnim dimenzijama
-        motionBoundary = MotionBoundary(
-            imageSize: image.size,
-            viewSize: UIScreen.main.bounds.size,
-            scale: scale
-        )
+        guard selectedImage != nil else { return }
         
         // Resetujemo offset slike na početnu poziciju
         imageOffset = .zero
@@ -269,71 +213,22 @@ class ContentViewModel: ObservableObject {
     }
     
     private func updateImagePosition(pitch: Double, roll: Double) {
-        // Pomeranje počinje tek kada je slika zoomirana (scale > 1.0)
-        let motionFactor: CGFloat = scale > 1.0 ? (1.0 + (scale - 1.0) * (4.0 / 9.0)) : 0.0
+        guard let maxOffset = calculateMaxOffset() else { return }
         
-        // Konvertujemo nagib u pomeranje sa manjom osetljivošću
-        let deltaX = CGFloat(roll) * motionFactor * 15 // Smanjili smo sa 25 na 15
-        let deltaY = CGFloat(pitch) * motionFactor * 15 // Smanjili smo sa 25 na 15
+        // Računamo delta pomeranje
+        let deltaX = CGFloat(roll) * 15.0
+        let deltaY = CGFloat(pitch) * 15.0
         
-        // Proveravamo granice i ažuriramo poziciju sa glatkom animacijom
-        if let maxOffset = calculateMaxOffset() {
-            // Računamo potencijalnu novu poziciju
-            let potentialX = imageOffset.x + deltaX
-            let potentialY = imageOffset.y + deltaY
-            
-            // Ograničavamo pomeranje na maksimalne vrednosti sa glatkim prelazima
-            withAnimation(.interactiveSpring(
-                response: 0.8,           // Povećali smo sa 0.5 na 0.8 za sporije kretanje
-                dampingFraction: 0.85,   // Povećali smo sa 0.8 na 0.85 za glatkije zaustavljanje
-                blendDuration: 0.4       // Povećali smo sa 0.3 na 0.4 za glatkije prelaze
-            )) {
-                imageOffset.x = max(min(potentialX, maxOffset.x), -maxOffset.x)
-                imageOffset.y = max(min(potentialY, maxOffset.y), -maxOffset.y)
-            }
-        } else {
-            // Ako nemamo granice, ažuriramo poziciju normalno
-            withAnimation(.interactiveSpring(
-                response: 0.8,           // Povećali smo sa 0.5 na 0.8 za sporije kretanje
-                dampingFraction: 0.85,   // Povećali smo sa 0.8 na 0.85 za glatkije zaustavljanje
-                blendDuration: 0.4       // Povećali smo sa 0.3 na 0.4 za glatkije prelaze
-            )) {
-                imageOffset = CGPoint(
-                    x: imageOffset.x + deltaX,
-                    y: imageOffset.y + deltaY
-                )
-            }
-        }
+        // Proveravamo da li će novo pomeranje izaći iz granica
+        let newX = imageOffset.x + deltaX
+        let newY = imageOffset.y + deltaY
         
-        // Debug informacije (smanjena frekvenca)
-        let currentTime = CACurrentMediaTime()
-        if currentTime - lastDebugPrintTime >= debugPrintInterval {
-            if let scaledSize = calculateImageSize(at: scale),
-               let maxOffset = calculateMaxOffset() {
-                let screenSize = UIScreen.main.bounds.size
-                let distanceFromLeft = maxOffset.x + imageOffset.x
-                let distanceFromRight = maxOffset.x - imageOffset.x
-                let distanceFromTop = maxOffset.y + imageOffset.y
-                let distanceFromBottom = maxOffset.y - imageOffset.y
-                
-                print("""
-                ----------------------------------------
-                Ekran: \(Int(screenSize.width))×\(Int(screenSize.height))
-                Slika: \(Int(scaledSize.width))×\(Int(scaledSize.height)) (\(String(format: "%.1f", scale))x)
-                ----------------------------------------
-                Od ivica:
-                Levo: \(String(format: "%.1f", distanceFromLeft))px
-                Desno: \(String(format: "%.1f", distanceFromRight))px
-                Gore: \(String(format: "%.1f", distanceFromTop))px
-                Dole: \(String(format: "%.1f", distanceFromBottom))px
-                ----------------------------------------
-                Pitch: \(String(format: "%.1f", pitch))° | Roll: \(String(format: "%.1f", roll))°
-                Pomeranje: \(String(format: "%.1f", deltaX))px,\(String(format: "%.1f", deltaY))px
-                ----------------------------------------
-                """)
-            }
-            lastDebugPrintTime = currentTime
-        }
+        // Ograničavamo pomeranje na maksimalne vrednosti
+        let clampedX = max(-maxOffset.x, min(maxOffset.x, newX))
+        let clampedY = max(-maxOffset.y, min(maxOffset.y, newY))
+        
+        // Ažuriramo poziciju
+        imageOffset = CGPoint(x: clampedX, y: clampedY)
     }
     
     func resetImage() {
@@ -375,6 +270,7 @@ class ContentViewModel: ObservableObject {
         return """
         Veličina slike: \(Int(scaledSize.width))×\(Int(scaledSize.height))
         Nivo zumiranja: \(String(format: "%.1f", scale))x
+        Rotacija: \(String(format: "%.1f", rotation))°
         """
     }
     
