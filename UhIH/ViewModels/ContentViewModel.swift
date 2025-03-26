@@ -278,15 +278,27 @@ class ContentViewModel: ObservableObject {
     private func calculateMaxOffset() -> (x: CGFloat, y: CGFloat)? {
         guard let image = selectedImage else { return nil }
         
-        // Računamo ravnomerno raspoređen fiksni zoom od 1.0 do 5.0 za zoom od 1 do 10
-        let fixedScale: CGFloat = 1.0 + (scale - 1.0) * (4.0 / 9.0)
-        
-        let scaledWidth = image.size.width * fixedScale
-        let scaledHeight = image.size.height * fixedScale
-        
         // Dobijamo veličinu ekrana
         let screenWidth = UIScreen.main.bounds.width
         let screenHeight = UIScreen.main.bounds.height
+        
+        // Računamo aspect ratio slike i ekrana
+        let imageAspectRatio = image.size.width / image.size.height
+        let screenAspectRatio = screenWidth / screenHeight
+        
+        // Računamo stvarnu veličinu slike nakon skaliranja sa .fit
+        let scaledWidth: CGFloat
+        let scaledHeight: CGFloat
+        
+        if imageAspectRatio > screenAspectRatio {
+            // Slika je šira od ekrana
+            scaledWidth = screenWidth * scale
+            scaledHeight = scaledWidth / imageAspectRatio
+        } else {
+            // Slika je viša od ekrana
+            scaledHeight = screenHeight * scale
+            scaledWidth = scaledHeight * imageAspectRatio
+        }
         
         // Računamo maksimalno pomeranje uzimajući u obzir rotaciju
         let maxOffsetX = max((scaledWidth - screenWidth) / 2, 0)
