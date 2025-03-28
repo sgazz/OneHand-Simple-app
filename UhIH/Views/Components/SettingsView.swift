@@ -5,6 +5,7 @@ struct SettingsView: View {
     @Binding var isPresented: Bool
     @AppStorage("shouldShowWelcomeGuide") private var shouldShowWelcomeGuide = true
     @AppStorage("autoHideUI") private var autoHideUI = true
+    @AppStorage("hideHelp") private var hideHelp = false
     @Environment(\.colorScheme) private var colorScheme
     
     private let settingsBackgroundColor = Color(red: 0.06, green: 0.11, blue: 0.21)
@@ -141,6 +142,30 @@ struct SettingsView: View {
                                         }
                                     }
                                     .padding(.vertical, 12)
+                                    
+                                    Divider()
+                                        .background(.white.opacity(0.1))
+                                    
+                                    // Hide Help
+                                    Button(action: { hideHelp.toggle() }) {
+                                        ZStack {
+                                            HStack {
+                                                if viewModel.selectedHand == .left {
+                                                    checkboxView(isChecked: hideHelp)
+                                                        .padding(.leading, 20)
+                                                    Spacer()
+                                                } else {
+                                                    Spacer()
+                                                    checkboxView(isChecked: hideHelp)
+                                                        .padding(.trailing, 20)
+                                                }
+                                            }
+                                            Text("Hide Help")
+                                                .font(textFont)
+                                                .foregroundStyle(settingsBackgroundColor)
+                                        }
+                                    }
+                                    .padding(.vertical, 12)
                                 }
                                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
                             }
@@ -221,6 +246,35 @@ struct SettingsView: View {
                                         
                                         // Text
                                         Text("Auto-hide Interface")
+                                            .font(textFont)
+                                            .foregroundStyle(settingsBackgroundColor)
+                                    }
+                                }
+                                .padding(.vertical, 12)
+                                
+                                Divider()
+                                    .background(.white.opacity(0.1))
+                                
+                                // Hide Help
+                                Button(action: {
+                                    hideHelp.toggle()
+                                }) {
+                                    ZStack {
+                                        // Checkbox
+                                        HStack {
+                                            if viewModel.selectedHand == .left {
+                                                checkboxView(isChecked: hideHelp)
+                                                    .padding(.leading, 20)
+                                                Spacer()
+                                            } else {
+                                                Spacer()
+                                                checkboxView(isChecked: hideHelp)
+                                                    .padding(.trailing, 20)
+                                            }
+                                        }
+                                        
+                                        // Text
+                                        Text("Hide Help")
                                             .font(textFont)
                                             .foregroundStyle(settingsBackgroundColor)
                                     }

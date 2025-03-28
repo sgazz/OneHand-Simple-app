@@ -6,7 +6,10 @@ struct ContentView: View {
     @StateObject private var welcomeGuideViewModel: WelcomeGuideViewModel
     @State private var isUIHidden = false
     @State private var hideUITimer: Timer?
+    @State private var showHelp = false
     @AppStorage("autoHideUI") private var autoHideUI = true
+    @AppStorage("shouldShowWelcomeGuide") private var shouldShowWelcomeGuide = true
+    @AppStorage("hideHelp") private var hideHelp = false
     
     init() {
         let contentViewModel = ContentViewModel()
@@ -84,17 +87,48 @@ struct ContentView: View {
                             
                             Spacer()
                             
-                            // Dugme za izbor slike
+                            // Dugmad za izbor slike i pomoć
                             GeometryReader { geometry in
-                                PhotosPicker(selection: $viewModel.selectedItems,
-                                           maxSelectionCount: 1,
-                                           matching: .images) {
-                                    Text("Choose Image")
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                        .frame(width: 200, height: 50)
-                                        .background(Color.blue)
-                                        .cornerRadius(15)
+                                ZStack {
+                                    // Dugme za izbor slike
+                                    PhotosPicker(selection: $viewModel.selectedItems,
+                                               maxSelectionCount: 1,
+                                               matching: .images) {
+                                        Text("Choose Image")
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                            .frame(width: 200, height: 50)
+                                            .background(Color.blue)
+                                            .cornerRadius(15)
+                                    }
+                                    .onTapGesture {
+                                        showUI()
+                                    }
+                                    
+                                    // Help dugme
+                                    if !hideHelp {
+                                        Button(action: {
+                                            withAnimation {
+                                                showHelp = true
+                                            }
+                                        }) {
+                                            Image(systemName: "questionmark.circle.fill")
+                                                .font(.system(size: 15))
+                                                .foregroundColor(.white)
+                                                .frame(width: 25, height: 25)
+                                                .background(Color(red: 0.8, green: 0.2, blue: 0.4))
+                                                .clipShape(Circle())
+                                                .overlay(
+                                                    Circle()
+                                                        .stroke(Color.white.opacity(0.6), lineWidth: 0.5)
+                                                )
+                                                .shadow(color: Color.black.opacity(0.3), radius: 3, x: 0, y: 1.5)
+                                        }
+                                        .onTapGesture {
+                                            showUI()
+                                        }
+                                        .offset(x: viewModel.selectedHand == .left ? -120 : 120, y: 0) // Zrcalimo Help dugme za levoruke
+                                    }
                                 }
                                 .position(
                                     x: UIDevice.current.orientation.isLandscape ?
@@ -102,9 +136,6 @@ struct ContentView: View {
                                         geometry.size.width / 2,
                                     y: geometry.size.height - 75
                                 )
-                                .onTapGesture {
-                                    showUI()
-                                }
                             }
                             .frame(height: 100)
                         }
@@ -121,6 +152,11 @@ struct ContentView: View {
                             }
                     }
                 }
+            }
+        }
+        .overlay {
+            if showHelp {
+                HelpView(isPresented: $showHelp, viewModel: viewModel)
             }
         }
         .onChange(of: viewModel.selectedItems) { oldValue, newValue in
