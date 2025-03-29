@@ -6,16 +6,27 @@ struct RadialMenuView: View {
     @State private var showSettings = false
     @ObservedObject var viewModel: ContentViewModel
     
+    // Boje za bordere
+    private let borderColors = [
+        "minus.magnifyingglass": Color(red: 0.2, green: 0.8, blue: 0.7).opacity(0.8),      // Tirkizno-zelena
+        "plus.magnifyingglass": Color(red: 0.2, green: 0.8, blue: 0.7).opacity(0.8),       // Tirkizno-zelena
+        "arrow.counterclockwise.circle": Color(red: 0.8, green: 0.2, blue: 0.2).opacity(0.8), // Tamno crvena
+        "arrow.clockwise": Color(red: 0.9, green: 0.5, blue: 0.2).opacity(0.8),           // Topla narandžasta
+        "arrow.counterclockwise": Color(red: 0.9, green: 0.5, blue: 0.2).opacity(0.8),    // Topla narandžasta
+        "move.3d": Color.white.opacity(0.8),                    // Bela sa providnošću
+        "slider.horizontal.3": Color(red: 0.4, green: 0.7, blue: 1.0).opacity(0.8)        // Nebo plava
+    ]
+    
     // Konfiguracija dugmadi
     private var menuItems: [RadialMenuItem] {
         [
-            RadialMenuItem(icon: "minus.magnifyingglass", color: .white.opacity(0.2)),
-            RadialMenuItem(icon: "plus.magnifyingglass", color: .white.opacity(0.2)),
-            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .white.opacity(0.2)),
-            RadialMenuItem(icon: "arrow.clockwise", color: .white.opacity(0.2)),
-            RadialMenuItem(icon: "arrow.counterclockwise", color: .white.opacity(0.2)),
-            RadialMenuItem(icon: "move.3d", color: .white.opacity(0.2)),
-            RadialMenuItem(icon: "slider.horizontal.3", color: .white.opacity(0.2))
+            RadialMenuItem(icon: "minus.magnifyingglass", color: .white.opacity(0.35)),
+            RadialMenuItem(icon: "plus.magnifyingglass", color: .white.opacity(0.35)),
+            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .white.opacity(0.35)),
+            RadialMenuItem(icon: "arrow.clockwise", color: .white.opacity(0.35)),
+            RadialMenuItem(icon: "arrow.counterclockwise", color: .white.opacity(0.35)),
+            RadialMenuItem(icon: "move.3d", color: .white.opacity(0.35)),
+            RadialMenuItem(icon: "slider.horizontal.3", color: .white.opacity(0.35))
         ]
     }
     
@@ -33,7 +44,8 @@ struct RadialMenuView: View {
                         selectedHand: viewModel.selectedHand ?? .right,
                         viewModel: viewModel,
                         onTap: { showUI() },
-                        showSettings: $showSettings
+                        showSettings: $showSettings,
+                        borderColor: borderColors[item.icon] ?? .white.opacity(0.6)
                     )
                 }
                 
@@ -51,8 +63,9 @@ struct RadialMenuView: View {
                             .fill(Color.white.opacity(0.2))
                             .overlay(
                                 Circle()
-                                    .stroke(Color.white.opacity(0.6), lineWidth: 1)
+                                    .stroke(Color(white: 0.15), lineWidth: 1)
                             )
+                            .shadow(color: Color(white: 0.15).opacity(0.3), radius: 2, x: 0, y: 0)
                         
                         Image(systemName: isExpanded ? "xmark" : "plus")
                             .font(.title2)
@@ -112,19 +125,33 @@ struct MenuButton: View {
     @ObservedObject var viewModel: ContentViewModel
     let onTap: () -> Void
     @Binding var showSettings: Bool
+    let borderColor: Color
+    
+    private var iconOpacity: Double {
+        switch item.icon {
+        case "minus.magnifyingglass", "plus.magnifyingglass":
+            return 0.85  // Zoom ikone
+        case "arrow.clockwise", "arrow.counterclockwise":
+            return 0.85  // Rotation ikone
+        case "slider.horizontal.3":
+            return 0.85  // Settings ikona
+        default:
+            return 0.75  // Ostale ikone
+        }
+    }
     
     var body: some View {
         Image(systemName: item.icon)
-            .font(.title3)
-            .foregroundColor(.white)
+            .font(.system(size: 24, weight: .regular))
+            .foregroundColor(borderColor.opacity(iconOpacity))
             .frame(width: index == 2 ? 45 : 60, height: index == 2 ? 45 : 60)
             .background(item.color)
             .clipShape(Circle())
             .overlay(
                 Circle()
-                    .stroke(Color.white.opacity(0.6), lineWidth: 1)
+                    .stroke(borderColor, lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 3)
+            .shadow(color: borderColor.opacity(0.3), radius: 3, x: 0, y: 0)
             .onTapGesture {
                 onTap()
                 if item.icon == "arrow.counterclockwise.circle" {
