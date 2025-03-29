@@ -54,15 +54,7 @@ struct ContentView: View {
                 
                 if viewModel.hasSelectedImage {
                     ZStack {
-                        // Slika ostaje vidljiva
-                        if let image = viewModel.selectedImage {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .scaleEffect(viewModel.scale)
-                                .rotationEffect(.degrees(viewModel.rotation))
-                                .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
-                        }
+                        ImageDetailView(viewModel: viewModel)
                         
                         // UI elementi koji se sakrivaju
                         VStack {

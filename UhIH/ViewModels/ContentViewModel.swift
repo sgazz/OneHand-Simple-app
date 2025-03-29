@@ -1,7 +1,9 @@
 import SwiftUI
 import PhotosUI
 import Combine
+import StoreKit
 
+@MainActor
 class ContentViewModel: ObservableObject {
     @Published var selectedHand: Handedness?
     @Published var selectedItems: [PhotosPickerItem] = []
@@ -15,13 +17,85 @@ class ContentViewModel: ObservableObject {
     @Published var isMotionTrackingEnabled: Bool = false
     @Published var imageOffset: CGPoint = .zero
     
+    // Pro функционалности
+    @Published var isProUser: Bool = false
+    @Published var showProPrompt: Bool = false
+    
+    // Нивои зума
+    enum ZoomLevel: CGFloat, CaseIterable {
+        case x1 = 1.0
+        case x2 = 2.0
+        case x3 = 3.0
+        case x4 = 4.0
+        case x5 = 5.0
+        case x6 = 6.0
+        case x7 = 7.0
+        case x8 = 8.0
+        case x9 = 9.0
+        case x10 = 10.0
+        case x15 = 15.0
+        case x20 = 20.0
+        
+        static var freeVersionLevels: [ZoomLevel] {
+            [.x1, .x2, .x10]
+        }
+        
+        static var proVersionLevels: [ZoomLevel] {
+            Self.allCases
+        }
+    }
+    
+    // Модификујемо постојеће променљиве
+    let minScale: CGFloat = ZoomLevel.x1.rawValue
+    let maxScale: CGFloat = ZoomLevel.x20.rawValue
+    
+    // Функција за проверу доступности нивоа зума
+    func isZoomLevelAvailable(_ level: ZoomLevel) -> Bool {
+        if isProUser {
+            return true
+        }
+        return ZoomLevel.freeVersionLevels.contains(level)
+    }
+    
+    // Модификујемо функцију за зумирање
+    func zoomTo(_ level: ZoomLevel) {
+        guard isZoomLevelAvailable(level) else {
+            showProVersionPrompt()
+            return
+        }
+        
+        HapticManager.playZoom(zoomIn: level.rawValue > scale)
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            scale = level.rawValue
+        }
+    }
+    
+    // Додајемо функцију за приказ Pro верзије
+    private func showProVersionPrompt() {
+        showProPrompt = true
+        HapticManager.playNotification(type: .warning)
+    }
+    
+    // Модификујемо постојеће функције за зумирање
+    func zoomIn() {
+        let currentLevel = ZoomLevel.allCases.first(where: { $0.rawValue > scale }) ?? .x20
+        if isZoomLevelAvailable(currentLevel) {
+            zoomTo(currentLevel)
+        }
+    }
+    
+    func zoomOut() {
+        let currentLevel = ZoomLevel.allCases.last(where: { $0.rawValue < scale }) ?? .x1
+        if isZoomLevelAvailable(currentLevel) {
+            zoomTo(currentLevel)
+        }
+    }
+    
     private var displayLink: CADisplayLink?
     private var currentZoomSpeed: CGFloat = 0.02
     private var lastUpdateTime: TimeInterval = 0
     private let rotationSpeed: Double = 180.0 // Konstantna brzina rotacije
     
-    let minScale: CGFloat = 1.0  // Početna veličina
-    let maxScale: CGFloat = 10.0  // Maksimalni zoom
     let baseZoomSpeed: CGFloat = 0.02 // Bazna brzina kontinuiranog zooma
     let maxZoomSpeed: CGFloat = 0.15 // Maksimalna brzina zooma
     let accelerationFactor: CGFloat = 1.2 // Faktor ubrzanja
@@ -50,6 +124,8 @@ class ContentViewModel: ObservableObject {
             return min(3072, max(screenSize.width, screenSize.height) * screenScale)
         }
     }
+    
+    private let storeManager = StoreManager.shared
     
     init() {
         setupScenePhaseObserver()
@@ -144,7 +220,16 @@ class ContentViewModel: ObservableObject {
         let deltaTime = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
         
-        scale = min(scale + currentZoomSpeed * CGFloat(deltaTime * 60), maxScale)
+        let nextScale = min(scale + currentZoomSpeed * CGFloat(deltaTime * 60), maxScale)
+        if let nextLevel = ZoomLevel.allCases.first(where: { $0.rawValue >= nextScale }) {
+            if !isZoomLevelAvailable(nextLevel) {
+                stopZooming()
+                showProVersionPrompt()
+                return
+            }
+        }
+        
+        scale = nextScale
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
     }
     
@@ -155,7 +240,16 @@ class ContentViewModel: ObservableObject {
         let deltaTime = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
         
-        scale = max(scale - currentZoomSpeed * CGFloat(deltaTime * 60), minScale)
+        let nextScale = max(scale - currentZoomSpeed * CGFloat(deltaTime * 60), minScale)
+        if let nextLevel = ZoomLevel.allCases.first(where: { $0.rawValue >= nextScale }) {
+            if !isZoomLevelAvailable(nextLevel) {
+                stopZooming()
+                showProVersionPrompt()
+                return
+            }
+        }
+        
+        scale = nextScale
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
     }
     
@@ -166,6 +260,11 @@ class ContentViewModel: ObservableObject {
     }
     
     func zoomToMax() {
+        if !isProUser {
+            showProVersionPrompt()
+            return
+        }
+        
         HapticManager.playZoom(zoomIn: true)
         withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
             scale = maxScale
@@ -176,20 +275,6 @@ class ContentViewModel: ObservableObject {
         HapticManager.playZoom(zoomIn: false)
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
             scale = minScale
-        }
-    }
-    
-    func zoomIn() {
-        HapticManager.playZoom(zoomIn: true)
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            scale = min(scale * 1.2, maxScale)
-        }
-    }
-    
-    func zoomOut() {
-        HapticManager.playZoom(zoomIn: false)
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            scale = max(scale * 0.8, minScale)
         }
     }
     
@@ -305,7 +390,7 @@ class ContentViewModel: ObservableObject {
         
         rotation += rotationSpeed * deltaTime
         
-        // Додајемо хаптички одзив сваких 45 степени
+        // Додајемо хаптички одзиv сваких 45 степени
         if Int(rotation.truncatingRemainder(dividingBy: 45)) == 0 {
             HapticManager.playRotation(intensity: 0.5)
         }
@@ -320,7 +405,7 @@ class ContentViewModel: ObservableObject {
         
         rotation -= rotationSpeed * deltaTime
         
-        // Додајемо хаптички одзив сваких 45 степени
+        // Додајемо хаптички одзиv сваких 45 степени
         if Int(abs(rotation).truncatingRemainder(dividingBy: 45)) == 0 {
             HapticManager.playRotation(intensity: 0.5)
         }
@@ -477,5 +562,37 @@ class ContentViewModel: ObservableObject {
                      String(format: "%.1f", imageOffset.y),
                      String(format: "%.1f", maxOffset.x),
                      String(format: "%.1f", maxOffset.y))
+    }
+    
+    func purchaseProVersion() async {
+        do {
+            try await storeManager.purchase()
+            await MainActor.run {
+                isProUser = storeManager.isProUser
+                showProPrompt = false
+                HapticManager.playSuccess()
+            }
+        } catch {
+            await MainActor.run {
+                // TODO: Приказати грешку кориснику
+                showProPrompt = false
+                HapticManager.playError()
+            }
+        }
+    }
+    
+    func restorePurchases() async {
+        do {
+            try await storeManager.restorePurchases()
+            await MainActor.run {
+                isProUser = storeManager.isProUser
+                if isProUser {
+                    HapticManager.playSuccess()
+                }
+            }
+        } catch {
+            // TODO: Приказати грешку кориснику
+            HapticManager.playError()
+        }
     }
 } 
