@@ -19,7 +19,7 @@ struct HelpView: View {
             // Sadržaj
             VStack(spacing: 20) {
                 // Naslov
-                Text("Kako koristiti dugmad")
+                Text(LocalizedStringKey("help.title"))
                     .font(.title2)
                     .foregroundColor(.white)
                     .padding(.top)
@@ -29,44 +29,44 @@ struct HelpView: View {
                     VStack(alignment: .leading, spacing: 15) {
                         // Centralno dugme
                         HelpItem(
-                            title: "Centralno dugme",
+                            title: "help.central_button",
                             icon: "plus",
-                            description: "Otvara/zatvara radijalni meni"
+                            description: "help.central_button_desc"
                         )
                         
                         // Zumiranje
                         HelpItem(
-                            title: "Zumiranje",
+                            title: "help.zoom",
                             icon: "magnifyingglass",
-                            description: "Dugim držanjem zumira unutra/iz\nDuplim tapom zumira na max/min"
+                            description: "help.zoom_desc"
                         )
                         
                         // Rotacija
                         HelpItem(
-                            title: "Rotacija",
+                            title: "help.rotation",
                             icon: "arrow.clockwise",
-                            description: "Dugim držanjem kontinuirano rotira\nDuplim tapom rotira za 45°"
+                            description: "help.rotation_desc"
                         )
                         
                         // Reset
                         HelpItem(
-                            title: "Reset",
+                            title: "help.reset",
                             icon: "arrow.counterclockwise.circle",
-                            description: "Resetuje sliku na početno stanje"
+                            description: "help.reset_desc"
                         )
                         
                         // Praćenje pokreta
                         HelpItem(
-                            title: "Praćenje pokreta",
+                            title: "help.motion",
                             icon: "move.3d",
-                            description: "Uključuje/isključuje praćenje pokreta telefona"
+                            description: "help.motion_desc"
                         )
                         
                         // Podešavanja
                         HelpItem(
-                            title: "Podešavanja",
+                            title: "help.settings",
                             icon: "slider.horizontal.3",
-                            description: "Otvara meni sa podešavanjima"
+                            description: "help.settings_desc"
                         )
                     }
                     .padding()
@@ -96,11 +96,11 @@ struct HelpItem: View {
                 .frame(width: 30)
             
             VStack(alignment: .leading, spacing: 5) {
-                Text(title)
+                Text(LocalizedStringKey(title))
                     .font(.headline)
                     .foregroundColor(.white)
                 
-                Text(description)
+                Text(LocalizedStringKey(description))
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
             }

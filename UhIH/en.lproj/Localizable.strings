@@ -21,5 +21,30 @@
 "welcome_screen.choose_image" = "Choose Image";
 
 // Image Detail View
-"image_detail.size_info" = "Image size: %@";
-"image_detail.offset_info" = "Current offset: %@px,%@px\nMax offset: %@px,%@px"; 
+"image_detail.no_image" = "No image selected";
+"image_detail.size_info" = "Image size: %@\nZoom level: %.1fx\nRotation: %.1f°";
+"image_detail.offset_info" = "Current offset: %@px,%@px\nMax offset: %@px,%@px";
+
+// Settings
+"settings.title" = "Settings";
+"settings.done" = "Done";
+"settings.left_handed" = "Left-handed";
+"settings.right_handed" = "Right-handed";
+"settings.show_welcome" = "Show Welcome Guide";
+"settings.auto_hide" = "Auto-hide Interface";
+"settings.hide_help" = "Hide Help";
+
+// Help View
+"help.title" = "How to use buttons";
+"help.central_button" = "Central Button";
+"help.central_button_desc" = "Opens/closes the radial menu";
+"help.zoom" = "Zoom";
+"help.zoom_desc" = "Long press to zoom in/out continuously\nDouble tap to zoom to max/min";
+"help.rotation" = "Rotation";
+"help.rotation_desc" = "Long press to rotate continuously\nDouble tap to rotate by 45°";
+"help.reset" = "Reset";
+"help.reset_desc" = "Resets the image to its initial state";
+"help.motion" = "Motion Tracking";
+"help.motion_desc" = "Enables/disables phone motion tracking";
+"help.settings" = "Settings";
+"help.settings_desc" = "Opens the settings menu"; 

@@ -94,7 +94,7 @@ struct ContentView: View {
                                     PhotosPicker(selection: $viewModel.selectedItems,
                                                maxSelectionCount: 1,
                                                matching: .images) {
-                                        Text("Choose Image")
+                                        Text(LocalizedStringKey("welcome_screen.choose_image"))
                                             .font(.headline)
                                             .foregroundColor(.white)
                                             .frame(width: 200, height: 50)

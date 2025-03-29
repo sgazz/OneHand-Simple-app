@@ -34,7 +34,7 @@ struct SettingsView: View {
                                     isPresented = false
                                     HapticManager.playSelection()
                                 }) {
-                                    Text("Done")
+                                    Text(LocalizedStringKey("settings.done"))
                                         .font(buttonFont)
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 16)
@@ -54,7 +54,7 @@ struct SettingsView: View {
                                     isPresented = false
                                     HapticManager.playSelection()
                                 }) {
-                                    Text("Done")
+                                    Text(LocalizedStringKey("settings.done"))
                                         .font(buttonFont)
                                         .foregroundStyle(.white)
                                         .padding(.horizontal, 16)
@@ -71,7 +71,7 @@ struct SettingsView: View {
                         }
                         
                         // Title
-                        Text("Settings")
+                        Text(LocalizedStringKey("settings.title"))
                             .font(titleFont)
                             .foregroundStyle(.white)
                     }
@@ -90,8 +90,8 @@ struct SettingsView: View {
                                 // Handedness Picker
                                 VStack(spacing: 0) {
                                     Picker("Handedness", selection: $viewModel.selectedHand) {
-                                        Text("Left-handed").tag(ContentViewModel.Handedness.left)
-                                        Text("Right-handed").tag(ContentViewModel.Handedness.right)
+                                        Text(LocalizedStringKey("settings.left_handed")).tag(ContentViewModel.Handedness.left)
+                                        Text(LocalizedStringKey("settings.right_handed")).tag(ContentViewModel.Handedness.right)
                                     }
                                     .pickerStyle(SegmentedPickerStyle())
                                 }
@@ -117,7 +117,7 @@ struct SettingsView: View {
                                                         .padding(.trailing, 20)
                                                 }
                                             }
-                                            Text("Show Welcome Guide")
+                                            Text(LocalizedStringKey("settings.show_welcome"))
                                                 .font(textFont)
                                                 .foregroundStyle(settingsBackgroundColor)
                                         }
@@ -144,7 +144,7 @@ struct SettingsView: View {
                                                         .padding(.trailing, 20)
                                                 }
                                             }
-                                            Text("Auto-hide Interface")
+                                            Text(LocalizedStringKey("settings.auto_hide"))
                                                 .font(textFont)
                                                 .foregroundStyle(settingsBackgroundColor)
                                         }
@@ -171,7 +171,7 @@ struct SettingsView: View {
                                                         .padding(.trailing, 20)
                                                 }
                                             }
-                                            Text("Hide Help")
+                                            Text(LocalizedStringKey("settings.hide_help"))
                                                 .font(textFont)
                                                 .foregroundStyle(settingsBackgroundColor)
                                         }
@@ -193,10 +193,10 @@ struct SettingsView: View {
                             // Handedness Picker
                             VStack(spacing: 0) {
                                 Picker("Handedness", selection: $viewModel.selectedHand) {
-                                    Text("Left-handed")
+                                    Text(LocalizedStringKey("settings.left_handed"))
                                         .font(textFont)
                                         .tag(ContentViewModel.Handedness.left)
-                                    Text("Right-handed")
+                                    Text(LocalizedStringKey("settings.right_handed"))
                                         .font(textFont)
                                         .tag(ContentViewModel.Handedness.right)
                                 }
@@ -228,7 +228,7 @@ struct SettingsView: View {
                                         }
                                         
                                         // Text
-                                        Text("Show Welcome Guide")
+                                        Text(LocalizedStringKey("settings.show_welcome"))
                                             .font(textFont)
                                             .foregroundStyle(settingsBackgroundColor)
                                     }
@@ -258,7 +258,7 @@ struct SettingsView: View {
                                         }
                                         
                                         // Text
-                                        Text("Auto-hide Interface")
+                                        Text(LocalizedStringKey("settings.auto_hide"))
                                             .font(textFont)
                                             .foregroundStyle(settingsBackgroundColor)
                                     }
@@ -288,7 +288,7 @@ struct SettingsView: View {
                                         }
                                         
                                         // Text
-                                        Text("Hide Help")
+                                        Text(LocalizedStringKey("settings.hide_help"))
                                             .font(textFont)
                                             .foregroundStyle(settingsBackgroundColor)
                                     }

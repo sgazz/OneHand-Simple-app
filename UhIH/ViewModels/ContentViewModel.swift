@@ -283,13 +283,10 @@ class ContentViewModel: ObservableObject {
     
     // Funkcija za prikazivanje informacija o veličini
     func getImageSizeInfo() -> String {
-        guard let scaledSize = calculateImageSize(at: scale) else { return "Nema slike" }
+        guard let scaledSize = calculateImageSize(at: scale) else { return NSLocalizedString("image_detail.no_image", comment: "Message when no image is selected") }
         
-        return """
-        Veličina slike: \(Int(scaledSize.width))×\(Int(scaledSize.height))
-        Nivo zumiranja: \(String(format: "%.1f", scale))x
-        Rotacija: \(String(format: "%.1f", rotation))°
-        """
+        return String(format: NSLocalizedString("image_detail.size_info", comment: "Image size information"),
+                     "\(Int(scaledSize.width))×\(Int(scaledSize.height))")
     }
     
     // Funkcija za računanje maksimalnog pomeranja slike u svakom smeru
@@ -333,11 +330,12 @@ class ContentViewModel: ObservableObject {
     
     // Funkcija za prikazivanje informacija o pomeranju
     func getOffsetInfo() -> String {
-        guard let maxOffset = calculateMaxOffset() else { return "Nema slike" }
+        guard let maxOffset = calculateMaxOffset() else { return "" }
         
-        return """
-        Trenutno pomeranje: \(Int(imageOffset.x))px,\(Int(imageOffset.y))px
-        Maksimalno pomeranje: \(Int(maxOffset.x))px,\(Int(maxOffset.y))px
-        """
+        return String(format: NSLocalizedString("image_detail.offset_info", comment: "Image offset information"),
+                     String(format: "%.1f", imageOffset.x),
+                     String(format: "%.1f", imageOffset.y),
+                     String(format: "%.1f", maxOffset.x),
+                     String(format: "%.1f", maxOffset.y))
     }
 } 
