@@ -1,57 +1,66 @@
-# OneHand Simple App
+# OneHand
 
-Jednostavna iOS aplikacija koja omogućava interaktivno upravljanje slikama pomoću senzora pokreta uređaja.
+OneHand је iOS апликација дизајнирана за једноставно прегледање и манипулацију сликама користећи само једну руку. Апликација је направљена са фокусом на приступачност и инклузивност.
 
-## Funkcionalnosti
+## Карактеристике
 
-- Izbor slike iz galerije
-- Interaktivno pomeranje slike pomoću nagiba uređaja
-- Podrška za levoruke i desnoruke korisnike
-- Zumiranje i rotacija slike
-- Radijalni meni za brzi pristup funkcijama
-- Automatsko sakrivanje UI elemenata nakon 5 sekundi neaktivnosti
-- Fade animacije za glatke prelaze
-- Precizno praćenje granica pomeranja slike
-- Intuitivan Welcome Guide sa prilagođenim UI za obe orijentacije
-- Optimizovan tok za izbor dominantne ruke
+- 🖼️ **Једноставна манипулација сликама**
+  - Зумирање
+  - Ротација
+  - Померање
+  - Брзо ресетовање на почетно стање
 
-## Tehnički detalji
+- 📱 **Радијални мени**
+  - Прилагођен за коришћење једном руком
+  - Подршка за леворуке и десноруке кориснике
+  - Интуитивне иконе и боје
+  - Хаптичке повратне информације
 
-- Razvijeno u SwiftUI
-- Koristi CoreMotion za praćenje pokreta
-- Minimalna veličina aplikacije (~1.4MB)
-- Podržava iOS 15.0 i novije verzije
-- Optimizovano za performanse i glatke animacije
-- Adaptivni UI za portrait i landscape orijentacije
+- 🔄 **Праћење покрета уређаја**
+  - Опционално померање слике пратећи покрете телефона
+  - Прецизна контрола
+  - Могућност искључивања
 
-## Instalacija
+- ⚡ **Оптимизација**
+  - Паметна компресија слика
+  - Прилагођавање различитим величинама екрана
+  - Ефикасно управљање меморијом
 
-1. Klonirajte repozitorijum
-2. Otvorite `UhIH.xcodeproj` u Xcode-u
-3. Izaberite ciljani uređaj ili simulator
-4. Pritisnite Run (⌘R)
+## Системски захтеви
 
-## Korišćenje
+- iOS 15.0 или новији
+- iPhone са подршком за хаптичке повратне информације
 
-1. Pokrenite aplikaciju
-2. U landscape modu, prvo izaberite dominantnu ruku
-3. Pratite Welcome Guide za upoznavanje sa funkcijama
-4. Izaberite sliku iz galerije
-5. Koristite nagibe uređaja za pomeranje slike
-6. Koristite gestikulacije za zumiranje i rotaciju
-7. UI elementi se automatski sakrivaju nakon 5 sekundi neaktivnosti
-8. Tap bilo gde na ekranu prikazuje UI elemente
-9. Koristite radijalni meni za brzi pristup funkcijama
+## Инсталација
 
-## Razvoj
+1. Клонирајте репозиторијум
+2. Отворите `OneHand.xcodeproj` у Xcode-у
+3. Изградите и покрените апликацију на вашем уређају
 
-Projekat je organizovan u sledeće direktorijume:
-- `Views/` - SwiftUI view komponente
-- `ViewModels/` - View modeli i logika
-- `Components/` - Pregradne komponente
-- `Screens/` - Glavni ekrani aplikacije
-- `Onboarding/` - Welcome Guide i onboarding komponente
+## Коришћење
 
-## Licenca
+1. Покрените апликацију
+2. Изаберите доминантну руку (лева или десна)
+3. Изаберите слику из галерије
+4. Користите радијални мени за манипулацију сликом:
+   - Зелена дугмад: зумирање
+   - Наранџаста дугмад: ротација
+   - Црвено дугме: ресет
+   - Бело дугме: праћење покрета
+   - Плаво дугме: подешавања
 
-MIT License 
+## Приступачност
+
+OneHand је дизајниран са фокусом на инклузивност. За детаљније информације о приступачности, погледајте [ACCESSIBILITY.md](ACCESSIBILITY.md).
+
+## Доприноси
+
+Доприноси су добродошли! Молимо вас да прочитате наше смернице за допринос пре слања pull request-а.
+
+## Лиценца
+
+Овај пројекат је лиценциран под MIT лиценцом - погледајте [LICENSE](LICENSE) фајл за детаље.
+
+## Контакт
+
+За сва питања или сугестије, молимо вас да отворите issue у овом репозиторијуму. 

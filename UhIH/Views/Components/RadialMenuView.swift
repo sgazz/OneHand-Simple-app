@@ -20,13 +20,13 @@ struct RadialMenuView: View {
     // Konfiguracija dugmadi
     private var menuItems: [RadialMenuItem] {
         [
-            RadialMenuItem(icon: "minus.magnifyingglass", color: .white.opacity(0.35)),
-            RadialMenuItem(icon: "plus.magnifyingglass", color: .white.opacity(0.35)),
-            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .white.opacity(0.35)),
-            RadialMenuItem(icon: "arrow.clockwise", color: .white.opacity(0.35)),
-            RadialMenuItem(icon: "arrow.counterclockwise", color: .white.opacity(0.35)),
-            RadialMenuItem(icon: "move.3d", color: .white.opacity(0.35)),
-            RadialMenuItem(icon: "slider.horizontal.3", color: .white.opacity(0.35))
+            RadialMenuItem(icon: "minus.magnifyingglass", color: .white.opacity(0.6)),
+            RadialMenuItem(icon: "plus.magnifyingglass", color: .white.opacity(0.6)),
+            RadialMenuItem(icon: "arrow.counterclockwise.circle", color: .white.opacity(0.6)),
+            RadialMenuItem(icon: "arrow.clockwise", color: .white.opacity(0.6)),
+            RadialMenuItem(icon: "arrow.counterclockwise", color: .white.opacity(0.6)),
+            RadialMenuItem(icon: "move.3d", color: .white.opacity(0.6)),
+            RadialMenuItem(icon: "slider.horizontal.3", color: .white.opacity(0.6))
         ]
     }
     
@@ -60,7 +60,7 @@ struct RadialMenuView: View {
                 }) {
                     ZStack {
                         Circle()
-                            .fill(Color.white.opacity(0.2))
+                            .fill(Color.white.opacity(0.6))  // Povećan opacitet centralnog dugmeta
                             .overlay(
                                 Circle()
                                     .stroke(Color(white: 0.15), lineWidth: 1)
@@ -130,20 +130,20 @@ struct MenuButton: View {
     private var iconOpacity: Double {
         switch item.icon {
         case "minus.magnifyingglass", "plus.magnifyingglass":
-            return 0.85  // Zoom ikone
+            return 1.0  // Zoom ikone
         case "arrow.clockwise", "arrow.counterclockwise":
-            return 0.85  // Rotation ikone
+            return 1.0  // Rotation ikone
         case "slider.horizontal.3":
-            return 0.85  // Settings ikona
+            return 1.0  // Settings ikona
         default:
-            return 0.75  // Ostale ikone
+            return 0.9  // Ostale ikone
         }
     }
     
     var body: some View {
         Image(systemName: item.icon)
-            .font(.system(size: 24, weight: .regular))
-            .foregroundColor(borderColor.opacity(iconOpacity))
+            .font(.system(size: 24, weight: .heavy))
+            .foregroundColor(.white)  // Čisto bela boja za SF Symbols
             .frame(width: index == 2 ? 45 : 60, height: index == 2 ? 45 : 60)
             .background(item.color)
             .clipShape(Circle())
@@ -151,7 +151,8 @@ struct MenuButton: View {
                 Circle()
                     .stroke(borderColor, lineWidth: 1)
             )
-            .shadow(color: borderColor.opacity(0.3), radius: 3, x: 0, y: 0)
+            .shadow(color: borderColor.opacity(0.5), radius: 2, x: 0, y: 0)
+            .shadow(color: .white.opacity(0.3), radius: 1, x: 0, y: 0)
             .onTapGesture {
                 onTap()
                 if item.icon == "arrow.counterclockwise.circle" {

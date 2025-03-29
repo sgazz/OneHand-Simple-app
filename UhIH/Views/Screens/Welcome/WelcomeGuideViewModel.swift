@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 class WelcomeGuideViewModel: ObservableObject {
     @AppStorage("shouldShowWelcomeGuide") private var shouldShowWelcomeGuide: Bool = true
     @Published var isShowingGuide: Bool = false
