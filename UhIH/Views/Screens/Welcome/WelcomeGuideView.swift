@@ -37,6 +37,9 @@ struct WelcomeGuideView: View {
                 )
             }
             .transition(.opacity)
+            .onAppear {
+                HapticManager.playAnimation(duration: 0.3)
+            }
         }
     }
     
@@ -137,6 +140,19 @@ struct WelcomeGuideView: View {
     // MARK: - Navigation
     private func navigateToSection(_ index: Int, direction: NavigationDirection) {
         guard index >= 0 && index < WelcomeGuideSection.count else { return }
+        
+        // Различити хаптички одзиви за различите ситуације
+        if index == WelcomeGuideSection.count - 1 {
+            // Последња секција
+            HapticManager.playSuccess()
+        } else if index == 0 && direction == .right {
+            // Враћање на прву секцију
+            HapticManager.playImpact(style: .rigid)
+        } else {
+            // Стандардна промена секције
+            HapticManager.playSelection()
+        }
+        
         animationManager.animateTransition(to: direction) {
             currentSectionIndex = index
         }

@@ -32,6 +32,7 @@ struct SettingsView: View {
                             if viewModel.selectedHand == .left {
                                 Button(action: {
                                     isPresented = false
+                                    HapticManager.playSelection()
                                 }) {
                                     Text("Done")
                                         .font(buttonFont)
@@ -51,6 +52,7 @@ struct SettingsView: View {
                                 Spacer()
                                 Button(action: {
                                     isPresented = false
+                                    HapticManager.playSelection()
                                 }) {
                                     Text("Done")
                                         .font(buttonFont)
@@ -99,7 +101,10 @@ struct SettingsView: View {
                                 // Options
                                 VStack(spacing: 2) {
                                     // Show Welcome Guide
-                                    Button(action: { shouldShowWelcomeGuide.toggle() }) {
+                                    Button(action: {
+                                        shouldShowWelcomeGuide.toggle()
+                                        HapticManager.playSelection()
+                                    }) {
                                         ZStack {
                                             HStack {
                                                 if viewModel.selectedHand == .left {
@@ -123,7 +128,10 @@ struct SettingsView: View {
                                         .background(.white.opacity(0.1))
                                     
                                     // Auto-hide Interface
-                                    Button(action: { autoHideUI.toggle() }) {
+                                    Button(action: {
+                                        autoHideUI.toggle()
+                                        HapticManager.playSelection()
+                                    }) {
                                         ZStack {
                                             HStack {
                                                 if viewModel.selectedHand == .left {
@@ -147,7 +155,10 @@ struct SettingsView: View {
                                         .background(.white.opacity(0.1))
                                     
                                     // Hide Help
-                                    Button(action: { hideHelp.toggle() }) {
+                                    Button(action: {
+                                        hideHelp.toggle()
+                                        HapticManager.playSelection()
+                                    }) {
                                         ZStack {
                                             HStack {
                                                 if viewModel.selectedHand == .left {
@@ -200,6 +211,7 @@ struct SettingsView: View {
                                 // Show Welcome Guide
                                 Button(action: {
                                     shouldShowWelcomeGuide.toggle()
+                                    HapticManager.playSelection()
                                 }) {
                                     ZStack {
                                         // Checkbox
@@ -229,6 +241,7 @@ struct SettingsView: View {
                                 // Auto-hide Interface
                                 Button(action: {
                                     autoHideUI.toggle()
+                                    HapticManager.playSelection()
                                 }) {
                                     ZStack {
                                         // Checkbox
@@ -258,6 +271,7 @@ struct SettingsView: View {
                                 // Hide Help
                                 Button(action: {
                                     hideHelp.toggle()
+                                    HapticManager.playSelection()
                                 }) {
                                     ZStack {
                                         // Checkbox

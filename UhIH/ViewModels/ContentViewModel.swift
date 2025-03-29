@@ -83,24 +83,28 @@ class ContentViewModel: ObservableObject {
     }
     
     func zoomToMax() {
+        HapticManager.playZoom(zoomIn: true)
         withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
             scale = maxScale
         }
     }
     
     func zoomToMin() {
+        HapticManager.playZoom(zoomIn: false)
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
             scale = minScale
         }
     }
     
     func zoomIn() {
+        HapticManager.playZoom(zoomIn: true)
         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
             scale = min(scale * 1.2, maxScale)
         }
     }
     
     func zoomOut() {
+        HapticManager.playZoom(zoomIn: false)
         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
             scale = max(scale * 0.8, minScale)
         }
@@ -115,6 +119,7 @@ class ContentViewModel: ObservableObject {
                     selectedImage = image
                     hasSelectedImage = true
                     scale = minScale
+                    HapticManager.playImpact(style: .medium)
                 }
             }
         }
@@ -122,12 +127,14 @@ class ContentViewModel: ObservableObject {
     
     // Funkcije za rotaciju
     func rotateClockwise() {
+        HapticManager.playRotation(intensity: 0.7)
         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
             rotation += 45
         }
     }
     
     func rotateCounterclockwise() {
+        HapticManager.playRotation(intensity: 0.7)
         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
             rotation -= 45
         }
@@ -157,6 +164,11 @@ class ContentViewModel: ObservableObject {
         lastUpdateTime = currentTime
         
         rotation += rotationSpeed * deltaTime
+        
+        // Додајемо хаптички одзив сваких 45 степени
+        if Int(rotation.truncatingRemainder(dividingBy: 45)) == 0 {
+            HapticManager.playRotation(intensity: 0.5)
+        }
     }
     
     @objc private func handleCounterclockwiseRotation() {
@@ -167,6 +179,11 @@ class ContentViewModel: ObservableObject {
         lastUpdateTime = currentTime
         
         rotation -= rotationSpeed * deltaTime
+        
+        // Додајемо хаптички одзив сваких 45 степени
+        if Int(abs(rotation).truncatingRemainder(dividingBy: 45)) == 0 {
+            HapticManager.playRotation(intensity: 0.5)
+        }
     }
     
     func stopRotation() {
@@ -232,6 +249,7 @@ class ContentViewModel: ObservableObject {
     }
     
     func resetImage() {
+        HapticManager.playImpact(style: .rigid)
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
             scale = minScale
             rotation = 0

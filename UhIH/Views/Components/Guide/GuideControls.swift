@@ -18,12 +18,18 @@ struct GuideControls: View {
                     Image(systemName: showAlways ? "checkmark.square.fill" : "square")
                         .font(.system(size: 20))
                         .foregroundColor(AppTheme.Colors.textPrimary)
-                        .onTapGesture(perform: onShowAlwaysToggle)
+                        .onTapGesture {
+                            HapticManager.playSelection()
+                            onShowAlwaysToggle()
+                        }
                 } else {
                     Image(systemName: showAlways ? "checkmark.square.fill" : "square")
                         .font(.system(size: 20))
                         .foregroundColor(AppTheme.Colors.textPrimary)
-                        .onTapGesture(perform: onShowAlwaysToggle)
+                        .onTapGesture {
+                            HapticManager.playSelection()
+                            onShowAlwaysToggle()
+                        }
                     Text(LocalizedStringKey("welcome.always_show"))
                         .font(AppTheme.Typography.caption)
                         .foregroundColor(AppTheme.Colors.textSecondary)
@@ -34,7 +40,9 @@ struct GuideControls: View {
             // Дугме за прескакање/завршетак
             Button(action: {
                 if isLastSection {
-                    HapticManager.playNotification(type: .success)
+                    HapticManager.playSuccess()
+                } else {
+                    HapticManager.playImpact(style: .medium)
                 }
                 onDismiss()
             }) {

@@ -57,6 +57,9 @@ struct ImageDetailView: View {
                             .frame(width: 200, height: 50)
                             .background(Color.blue)
                             .cornerRadius(15)
+                            .onTapGesture {
+                                HapticManager.playSelection()
+                            }
                     }
                     .padding(.bottom, 50)
                 }

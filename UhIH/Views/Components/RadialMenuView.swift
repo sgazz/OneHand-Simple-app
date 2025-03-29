@@ -39,6 +39,7 @@ struct RadialMenuView: View {
                 
                 // Centralno dugme
                 Button(action: {
+                    HapticManager.playImpact(style: isExpanded ? .rigid : .light)
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         isExpanded.toggle()
                         rotation += 45
@@ -127,10 +128,13 @@ struct MenuButton: View {
             .onTapGesture {
                 onTap()
                 if item.icon == "arrow.counterclockwise.circle" {
+                    HapticManager.playImpact(style: .rigid)
                     viewModel.resetImage()
                 } else if item.icon == "move.3d" {
+                    HapticManager.playImpact(style: viewModel.isMotionTrackingEnabled ? .soft : .medium)
                     viewModel.toggleMotionTracking()
                 } else if item.icon == "slider.horizontal.3" {
+                    HapticManager.playSelection()
                     showSettings = true
                 }
             }
@@ -140,12 +144,16 @@ struct MenuButton: View {
                         onTap()
                         switch item.icon {
                         case "plus.magnifyingglass":
+                            HapticManager.playZoom(zoomIn: true)
                             viewModel.zoomToMax()
                         case "minus.magnifyingglass":
+                            HapticManager.playZoom(zoomIn: false)
                             viewModel.zoomToMin()
                         case "arrow.clockwise":
+                            HapticManager.playRotation(intensity: 1.0)
                             viewModel.rotateClockwise()
                         case "arrow.counterclockwise":
+                            HapticManager.playRotation(intensity: 1.0)
                             viewModel.rotateCounterclockwise()
                         default:
                             break
@@ -156,6 +164,7 @@ struct MenuButton: View {
                 LongPressGesture(minimumDuration: 0.1)
                     .onEnded { _ in
                         onTap()
+                        HapticManager.playImpact(style: .medium)
                         switch item.icon {
                         case "plus.magnifyingglass":
                             viewModel.startContinuousZoomIn()
@@ -174,6 +183,7 @@ struct MenuButton: View {
                 DragGesture(minimumDistance: 0)
                     .onEnded { _ in
                         onTap()
+                        HapticManager.playImpact(style: .light)
                         viewModel.stopZooming()
                         viewModel.stopRotation()
                     }

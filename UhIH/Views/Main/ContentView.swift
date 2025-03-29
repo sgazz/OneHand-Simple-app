@@ -102,6 +102,7 @@ struct ContentView: View {
                                             .cornerRadius(15)
                                     }
                                     .onTapGesture {
+                                        HapticManager.playSelection()
                                         showUI()
                                     }
                                     
