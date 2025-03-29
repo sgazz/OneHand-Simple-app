@@ -31,6 +31,89 @@ class ContentViewModel: ObservableObject {
     // Set za čuvanje Combine subscriptions
     private var cancellables = Set<AnyCancellable>()
     
+    // Додајемо observer za сцену
+    private var scenePhaseObserver: AnyCancellable?
+    
+    // Додајемо нове константе за оптимизацију величине
+    private let screenScale = UIScreen.main.scale
+    private var maxImageDimension: CGFloat {
+        let totalMemory = ProcessInfo.processInfo.physicalMemory
+        let screenSize = UIScreen.main.bounds.size
+        
+        // Прилагођавамо максималну димензију слике на основу меморије уређаја
+        // и величине екрана
+        if totalMemory < 2_000_000_000 { // 2GB
+            return min(1536, max(screenSize.width, screenSize.height) * screenScale)
+        } else if totalMemory < 4_000_000_000 { // 4GB
+            return min(2048, max(screenSize.width, screenSize.height) * screenScale)
+        } else {
+            return min(3072, max(screenSize.width, screenSize.height) * screenScale)
+        }
+    }
+    
+    init() {
+        setupScenePhaseObserver()
+        setupMemoryWarningObserver()
+    }
+    
+    deinit {
+        scenePhaseObserver?.cancel()
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func setupScenePhaseObserver() {
+        scenePhaseObserver = NotificationCenter.default
+            .publisher(for: UIApplication.willResignActiveNotification)
+            .sink { [weak self] _ in
+                self?.handleBackgroundTransition()
+            }
+    }
+    
+    private func setupMemoryWarningObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleMemoryWarning),
+            name: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil
+        )
+    }
+    
+    private func handleBackgroundTransition() {
+        // Чистимо кеш слика које нису тренутно приказане
+        images.removeAll(where: { $0 !== selectedImage })
+        
+        // Ослобађамо ресурсе који нису неопходни
+        displayLink?.invalidate()
+        displayLink = nil
+        stopMotionTracking()
+        
+        // Форсирамо ослобађање меморије
+        autoreleasepool {
+            images = []
+            if let currentImage = selectedImage {
+                images = [currentImage]
+            }
+        }
+    }
+    
+    @objc private func handleMemoryWarning() {
+        // Чистимо све слике осим тренутно приказане
+        images.removeAll(where: { $0 !== selectedImage })
+        
+        // Ресетујемо зум и ротацију на подразумеване вредности
+        scale = minScale
+        rotation = 0
+        imageOffset = .zero
+        
+        // Форсирамо ослобађање меморије
+        autoreleasepool {
+            images = []
+            if let currentImage = selectedImage {
+                images = [currentImage]
+            }
+        }
+    }
+    
     enum Handedness {
         case left
         case right
@@ -112,17 +195,74 @@ class ContentViewModel: ObservableObject {
     
     func handleImageSelection(_ items: [PhotosPickerItem]) async {
         for item in items {
-            if let data = try? await item.loadTransferable(type: Data.self),
-               let image = UIImage(data: data) {
-                await MainActor.run {
-                    images.append(image)
-                    selectedImage = image
-                    hasSelectedImage = true
-                    scale = minScale
-                    HapticManager.playImpact(style: .medium)
+            if let data = try? await item.loadTransferable(type: Data.self) {
+                // Prvo učitavamo sliku da bismo dobili njene dimenzije
+                if let originalImage = UIImage(data: data) {
+                    await MainActor.run {
+                        // Optimizujemo sliku pre čuvanja
+                        if let optimizedImage = compressImage(originalImage) {
+                            // Čistimo prethodne slike iz memorije
+                            images.removeAll()
+                            selectedImage = optimizedImage
+                            images.append(optimizedImage)
+                            hasSelectedImage = true
+                            scale = minScale
+                            HapticManager.playImpact(style: .medium)
+                        }
+                    }
                 }
             }
         }
+    }
+    
+    // Funkcija za kompresiju i optimizaciju slike
+    private func compressImage(_ image: UIImage) -> UIImage? {
+        let scale = image.size.width > image.size.height ? 
+            maxImageDimension / image.size.width : 
+            maxImageDimension / image.size.height
+            
+        // Ако је слика мања од максималне димензије, само је компресујемо
+        if scale >= 1.0 {
+            return compressImageData(image)
+        }
+        
+        // Рачунамо нову величину слике
+        let newSize = CGSize(
+            width: image.size.width * scale,
+            height: image.size.height * scale
+        )
+        
+        // Користимо оптимизовани контекст за цртање
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1.0 // Спречавамо додатно скалирање
+        format.preferredRange = .standard
+        
+        let renderer = UIGraphicsImageRenderer(size: newSize, format: format)
+        let scaledImage = renderer.image { context in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+        
+        return compressImageData(scaledImage)
+    }
+    
+    // Funkcija za kompresiju podataka slike
+    private func compressImageData(_ image: UIImage) -> UIImage? {
+        // Динамички одређујемо квалитет компресије на основу величине слике
+        let compressionQuality: CGFloat
+        let pixelCount = image.size.width * image.size.height
+        
+        if pixelCount > 4_000_000 { // 4 мегапиксела
+            compressionQuality = 0.6
+        } else if pixelCount > 2_000_000 { // 2 мегапиксела
+            compressionQuality = 0.7
+        } else {
+            compressionQuality = 0.8
+        }
+        
+        guard let imageData = image.jpegData(compressionQuality: compressionQuality) else {
+            return image
+        }
+        return UIImage(data: imageData)
     }
     
     // Funkcije za rotaciju
