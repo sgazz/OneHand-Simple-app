@@ -10,22 +10,9 @@
 		CF7B630F2D8DE06600C8B128 /* UhIH.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UhIH.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		CF4D73AB2D9884370092622C /* Exceptions for "UhIH" folder in "UhIH" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = CF7B630E2D8DE06600C8B128 /* UhIH */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CF7B63112D8DE06600C8B128 /* UhIH */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				CF4D73AB2D9884370092622C /* Exceptions for "UhIH" folder in "UhIH" target */,
-			);
 			path = UhIH;
 			sourceTree = "<group>";
 		};
@@ -271,7 +258,6 @@
 				DEVELOPMENT_TEAM = 83F7KY8L5Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = UhIH/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "OneHand Simple app";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -304,7 +290,6 @@
 				DEVELOPMENT_TEAM = 83F7KY8L5Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = UhIH/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "OneHand Simple app";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
