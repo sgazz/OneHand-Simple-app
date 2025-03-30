@@ -53,6 +53,14 @@ struct ImageDetailView: View {
                 }
                 .presentationDetents([.medium])
             }
+            .sheet(isPresented: $viewModel.showExtremeZoomPrompt) {
+                ExtremeZoomView(isPresented: $viewModel.showExtremeZoomPrompt) {
+                    await viewModel.purchaseExtremeZoom()
+                } onRestore: {
+                    await viewModel.restorePurchases()
+                }
+                .presentationDetents([.medium])
+            }
         }
         .onChange(of: viewModel.selectedImage) { oldValue, newValue in
             imageOpacity = 0 // Resetujemo opacity na 0

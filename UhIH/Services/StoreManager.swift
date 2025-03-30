@@ -7,15 +7,22 @@ class StoreManager: ObservableObject {
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProducts: [Product] = []
     
-    private let productIdentifiers = ["com.onehand.app.pro"]
+    private let productIdentifiers = ["com.onehand.app.pro", "com.onehand.app.extreme_zoom"]
     
     #if DEBUG
     private var mockPurchased = false
+    private var mockExtremeZoom = false
     
     private func simulatePurchase() {
         print("StoreManager: Симулирам куповину...")
         mockPurchased = true
         print("StoreManager: Симулација куповине је успешна")
+    }
+    
+    private func simulateExtremeZoomPurchase() {
+        print("StoreManager: Симулирам куповину Extreme Zoom-а...")
+        mockExtremeZoom = true
+        print("StoreManager: Симулација куповине Extreme Zoom-а је успешна")
     }
     #endif
     
@@ -62,18 +69,18 @@ class StoreManager: ObservableObject {
     }
     
     func purchase() async throws {
-        print("StoreManager: Започињем куповину...")
+        print("StoreManager: Започињем куповину Pro верзије...")
         
         #if DEBUG
         simulatePurchase()
         return
         #else
-        guard let product = products.first else {
-            print("StoreManager: Нема доступних производа за куповину")
+        guard let product = products.first(where: { $0.id == "com.onehand.app.pro" }) else {
+            print("StoreManager: Pro верзија није доступна за куповину")
             throw StoreError.productNotFound
         }
         
-        print("StoreManager: Покушавам куповину производа:")
+        print("StoreManager: Покушавам куповину Pro верзије:")
         print("- ID: \(product.id)")
         print("- Име: \(product.displayName)")
         print("- Цена: \(product.displayPrice)")
@@ -83,9 +90,49 @@ class StoreManager: ObservableObject {
             
             switch result {
             case .success(_):
-                print("StoreManager: Куповина је успешна, верификујем трансакцију...")
+                print("StoreManager: Куповина Pro верзије је успешна")
                 purchasedProducts.append(product)
-                print("StoreManager: Трансакција је успешно обрађена")
+            case .userCancelled:
+                print("StoreManager: Корисник је отказао куповину")
+                throw StoreError.userCancelled
+            case .pending:
+                print("StoreManager: Куповина је на чекању")
+                throw StoreError.pending
+            @unknown default:
+                print("StoreManager: Непозната грешка при куповини")
+                throw StoreError.unknown
+            }
+        } catch {
+            print("StoreManager: Грешка при куповини: \(error)")
+            throw error
+        }
+        #endif
+    }
+    
+    func purchaseExtremeZoom() async throws {
+        print("StoreManager: Започињем куповину Extreme Zoom-а...")
+        
+        #if DEBUG
+        simulateExtremeZoomPurchase()
+        return
+        #else
+        guard let product = products.first(where: { $0.id == "com.onehand.app.extreme_zoom" }) else {
+            print("StoreManager: Extreme Zoom није доступан за куповину")
+            throw StoreError.productNotFound
+        }
+        
+        print("StoreManager: Покушавам куповину Extreme Zoom-а:")
+        print("- ID: \(product.id)")
+        print("- Име: \(product.displayName)")
+        print("- Цена: \(product.displayPrice)")
+        
+        do {
+            let result = try await product.purchase()
+            
+            switch result {
+            case .success(_):
+                print("StoreManager: Куповина Extreme Zoom-а је успешна")
+                purchasedProducts.append(product)
             case .userCancelled:
                 print("StoreManager: Корисник је отказао куповину")
                 throw StoreError.userCancelled
@@ -107,6 +154,7 @@ class StoreManager: ObservableObject {
         #if DEBUG
         print("StoreManager: Симулирам обнављање куповине...")
         simulatePurchase()
+        simulateExtremeZoomPurchase()
         #else
         try await AppStore.sync()
         await updatePurchasedProducts()
@@ -117,7 +165,15 @@ class StoreManager: ObservableObject {
         #if DEBUG
         return mockPurchased
         #else
-        return !purchasedProducts.isEmpty
+        return purchasedProducts.contains(where: { $0.id == "com.onehand.app.pro" })
+        #endif
+    }
+    
+    var hasExtremeZoom: Bool {
+        #if DEBUG
+        return mockExtremeZoom
+        #else
+        return purchasedProducts.contains(where: { $0.id == "com.onehand.app.extreme_zoom" })
         #endif
     }
 }
@@ -132,7 +188,7 @@ enum StoreError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .productNotFound:
-            return "Pro верзија није доступна за куповину."
+            return "Производ није доступан за куповину."
         case .userCancelled:
             return "Куповина је отказана."
         case .pending:
