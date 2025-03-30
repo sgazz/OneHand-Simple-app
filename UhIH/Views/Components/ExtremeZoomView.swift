@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ProVersionView: View {
+struct ExtremeZoomView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var isPresented: Bool
     @State private var isPurchasing = false
@@ -12,19 +12,19 @@ struct ProVersionView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Откључајте Pro верзију")
+            Text("Екстремни зум")
                 .font(.title)
                 .bold()
             
             VStack(alignment: .leading, spacing: 15) {
-                FeatureRow(icon: "plus.magnifyingglass", text: "Зум до 10x")
-                FeatureRow(icon: "slider.horizontal.3", text: "Прецизна контрола зумирања")
-                FeatureRow(icon: "gauge.with.dots.needle.50percent", text: "Оптимизоване перформансе")
-                FeatureRow(icon: "star.fill", text: "Приоритетна подршка")
+                FeatureRow(icon: "plus.magnifyingglass", text: "Сви нивои зума (до 20x)")
+                FeatureRow(icon: "sparkles", text: "Укључује све Pro функције")
+                FeatureRow(icon: "arrow.up.forward", text: "Додатни нивои: 15x и 20x")
+                FeatureRow(icon: "exclamationmark.triangle", text: "За напредне кориснике")
             }
             .padding(.vertical)
             
-            Text("Само $2.99")
+            Text("Само $0.99")
                 .font(.headline)
                 .foregroundColor(.blue)
             
@@ -48,7 +48,7 @@ struct ProVersionView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                 } else {
-                    Text("Купи Pro верзију")
+                    Text("Купи Extreme Zoom")
                         .font(.headline)
                         .foregroundColor(.white)
                 }
@@ -94,23 +94,8 @@ struct ProVersionView: View {
     }
 }
 
-struct FeatureRow: View {
-    let icon: String
-    let text: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .foregroundColor(.blue)
-                .font(.system(size: 20))
-            Text(text)
-                .font(.body)
-        }
-    }
-}
-
 #Preview {
-    ProVersionView(isPresented: .constant(true),
-                  onPurchase: { },
-                  onRestore: { })
+    ExtremeZoomView(isPresented: .constant(true),
+                    onPurchase: { },
+                    onRestore: { })
 } 

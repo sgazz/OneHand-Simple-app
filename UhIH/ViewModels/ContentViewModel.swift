@@ -19,7 +19,9 @@ class ContentViewModel: ObservableObject {
     
     // Pro функционалности
     @Published var isProUser: Bool = false
+    @Published var hasExtremeZoom: Bool = false
     @Published var showProPrompt: Bool = false
+    @Published var showExtremeZoomPrompt: Bool = false
     
     // Нивои зума
     enum ZoomLevel: CGFloat, CaseIterable {
@@ -37,11 +39,15 @@ class ContentViewModel: ObservableObject {
         case x20 = 20.0
         
         static var freeVersionLevels: [ZoomLevel] {
-            [.x1, .x2, .x10]
+            [.x1, .x2, .x3, .x4]
         }
         
         static var proVersionLevels: [ZoomLevel] {
-            Self.allCases
+            [.x1, .x2, .x3, .x4, .x5, .x6, .x7, .x8, .x9, .x10]
+        }
+        
+        static var extremeZoomLevels: [ZoomLevel] {
+            [.x15, .x20]
         }
     }
     
@@ -51,16 +57,24 @@ class ContentViewModel: ObservableObject {
     
     // Функција за проверу доступности нивоа зума
     func isZoomLevelAvailable(_ level: ZoomLevel) -> Bool {
-        if isProUser {
-            return true
+        if level.rawValue <= 4.0 {
+            return true // Бесплатна верзија
         }
-        return ZoomLevel.freeVersionLevels.contains(level)
+        if level.rawValue <= 10.0 {
+            return isProUser // Pro верзија
+        }
+        return hasExtremeZoom // Extreme Zoom addon
     }
     
     // Модификујемо функцију за зумирање
     func zoomTo(_ level: ZoomLevel) {
-        guard isZoomLevelAvailable(level) else {
-            showProVersionPrompt()
+        if !isZoomLevelAvailable(level) {
+            if !isProUser {
+                showProVersionPrompt()
+            } else if isProUser && level.rawValue > 10.0 {
+                showExtremeZoomPrompt = true
+                HapticManager.playNotification(type: .warning)
+            }
             return
         }
         
@@ -72,23 +86,30 @@ class ContentViewModel: ObservableObject {
     
     // Додајемо функцију за приказ Pro верзије
     private func showProVersionPrompt() {
-        showProPrompt = true
-        HapticManager.playNotification(type: .warning)
+        if !isProUser {
+            showProPrompt = true
+            HapticManager.playNotification(type: .warning)
+        }
     }
     
-    // Модификујемо постојеће функције за зумирање
+    // Модификујемо функције за зумирање
     func zoomIn() {
         let currentLevel = ZoomLevel.allCases.first(where: { $0.rawValue > scale }) ?? .x20
-        if isZoomLevelAvailable(currentLevel) {
-            zoomTo(currentLevel)
+        if !isZoomLevelAvailable(currentLevel) {
+            if !isProUser && currentLevel.rawValue <= 10.0 {
+                showProVersionPrompt()
+            } else if isProUser && currentLevel.rawValue > 10.0 {
+                showExtremeZoomPrompt = true
+                HapticManager.playNotification(type: .warning)
+            }
+            return
         }
+        zoomTo(currentLevel)
     }
     
     func zoomOut() {
         let currentLevel = ZoomLevel.allCases.last(where: { $0.rawValue < scale }) ?? .x1
-        if isZoomLevelAvailable(currentLevel) {
-            zoomTo(currentLevel)
-        }
+        zoomTo(currentLevel)
     }
     
     private var displayLink: CADisplayLink?
@@ -114,7 +135,7 @@ class ContentViewModel: ObservableObject {
         let totalMemory = ProcessInfo.processInfo.physicalMemory
         let screenSize = UIScreen.main.bounds.size
         
-        // Прилагођавамо максималну димензију слике на основу меморије уређаја
+        // Прилагођавамо maximum diмензију слике на основу меморије уређаја
         // и величине екрана
         if totalMemory < 2_000_000_000 { // 2GB
             return min(1536, max(screenSize.width, screenSize.height) * screenScale)
@@ -306,7 +327,7 @@ class ContentViewModel: ObservableObject {
             maxImageDimension / image.size.width : 
             maxImageDimension / image.size.height
             
-        // Ако је слика мања од максималне димензије, само је компресујемо
+        // Ако је слика мања од maximum diмензије, само је компресујемо
         if scale >= 1.0 {
             return compressImageData(image)
         }
@@ -581,17 +602,33 @@ class ContentViewModel: ObservableObject {
         }
     }
     
+    func purchaseExtremeZoom() async {
+        do {
+            try await storeManager.purchaseExtremeZoom()
+            await MainActor.run {
+                hasExtremeZoom = storeManager.hasExtremeZoom
+                showExtremeZoomPrompt = false
+                HapticManager.playSuccess()
+            }
+        } catch {
+            await MainActor.run {
+                showExtremeZoomPrompt = false
+                HapticManager.playError()
+            }
+        }
+    }
+    
     func restorePurchases() async {
         do {
             try await storeManager.restorePurchases()
             await MainActor.run {
                 isProUser = storeManager.isProUser
-                if isProUser {
+                hasExtremeZoom = storeManager.hasExtremeZoom
+                if isProUser || hasExtremeZoom {
                     HapticManager.playSuccess()
                 }
             }
         } catch {
-            // TODO: Приказати грешку кориснику
             HapticManager.playError()
         }
     }

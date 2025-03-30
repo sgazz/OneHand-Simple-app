@@ -15,23 +15,33 @@
   ],
   "products" : [
     {
-      "displayPrice" : "4.99",
+      "displayPrice" : "2.99",
       "familyShareable" : true,
       "internalID" : "pro_version",
       "localizations" : [
         {
-          "description" : "Откључајте све функције OneHand апликације",
-          "displayName" : "OneHand Pro",
-          "locale" : "en_US"
-        },
-        {
-          "description" : "Unlock all features of OneHand app",
+          "description" : "Unlock Pro features including zoom up to 10x",
           "displayName" : "OneHand Pro",
           "locale" : "en_US"
         }
       ],
       "productID" : "com.onehand.app.pro",
       "referenceName" : "Pro Version",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : true,
+      "internalID" : "extreme_zoom",
+      "localizations" : [
+        {
+          "description" : "Unlock extreme zoom levels from 10x to 20x",
+          "displayName" : "Extreme Zoom Pack",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.onehand.app.extreme_zoom",
+      "referenceName" : "Extreme Zoom",
       "type" : "NonConsumable"
     }
   ],
