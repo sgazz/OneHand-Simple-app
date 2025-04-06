@@ -456,9 +456,6 @@ class ContentViewModel: ObservableObject {
     private func startMotionTracking() {
         guard selectedImage != nil else { return }
         
-        // Resetujemo offset slike na početnu poziciju
-        imageOffset = .zero
-        
         // Kalibrišemo trenutni položaj telefona kao referentnu tačku
         motionManager.calibrate()
         
