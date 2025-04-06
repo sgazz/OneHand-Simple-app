@@ -49,6 +49,10 @@ class MotionManager: ObservableObject {
         baselineRoll = motion.attitude.roll
         isInDeadZone = true
         lastUpdateTime = CACurrentMediaTime()
+        
+        // Resetujemo vrednosti nakon kalibracije
+        pitch = 0.0
+        roll = 0.0
     }
     
     func startTracking() {
@@ -104,14 +108,29 @@ class MotionManager: ObservableObject {
         motionManager.stopDeviceMotionUpdates()
         isTracking = false
         
-        // Resetujemo vrednosti
+        // Resetujemo vrednosti ali zadržavamo baseline
         pitch = 0.0
         roll = 0.0
         isInDeadZone = true
     }
     
     private func checkBoundsAndApplyBounce() {
-        // Implementiraćemo kasnije kada dodamo MotionBoundary
+        // Proveravamo da li smo na granicama
+        let isAtPitchLimit = abs(pitch) >= maxPitch
+        let isAtRollLimit = abs(roll) >= maxRoll
+        
+        // Ako smo na granici i prošlo je dovoljno vremena od poslednjeg bounce-a
+        if (isAtPitchLimit || isAtRollLimit) && 
+           (lastBounceTime == nil || Date().timeIntervalSince(lastBounceTime!) >= bounceInterval) {
+            // Primena bounce efekta
+            if isAtPitchLimit {
+                pitch = pitch > 0 ? maxPitch - bounceThreshold : -maxPitch + bounceThreshold
+            }
+            if isAtRollLimit {
+                roll = roll > 0 ? maxRoll - bounceThreshold : -maxRoll + bounceThreshold
+            }
+            lastBounceTime = Date()
+        }
     }
     
     deinit {

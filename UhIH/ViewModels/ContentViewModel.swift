@@ -16,8 +16,9 @@ class ContentViewModel: ObservableObject {
     @Published var isRotating = false
     @Published var isMotionTrackingEnabled: Bool = false
     @Published var imageOffset: CGPoint = .zero
+    @Published var lastFixedOffset: CGPoint = .zero  // Nova promenljiva za čuvanje fiksne pozicije
     
-    // Pro функционалности
+    // Pro funkционалности
     @Published var isProUser: Bool = false
     @Published var hasExtremeZoom: Bool = false
     @Published var showProPrompt: Bool = false
@@ -250,6 +251,8 @@ class ContentViewModel: ObservableObject {
             }
         }
         
+        // Ažuriramo poziciju pre promene scale-a
+        updateOffsetForZoom(newScale: nextScale)
         scale = nextScale
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
     }
@@ -270,6 +273,8 @@ class ContentViewModel: ObservableObject {
             }
         }
         
+        // Ažuriramo poziciju pre promene scale-a
+        updateOffsetForZoom(newScale: nextScale)
         scale = nextScale
         currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
     }
@@ -473,6 +478,8 @@ class ContentViewModel: ObservableObject {
     
     private func stopMotionTracking() {
         motionManager.stopTracking()
+        // Čuvamo trenutnu poziciju kao fiksnu
+        lastFixedOffset = imageOffset
     }
     
     private func updateImagePosition(pitch: Double, roll: Double) {
@@ -494,13 +501,31 @@ class ContentViewModel: ObservableObject {
         imageOffset = CGPoint(x: clampedX, y: clampedY)
     }
     
+    // Nova funkcija za ažuriranje pozicije tokom zoom operacija
+    private func updateOffsetForZoom(newScale: CGFloat) {
+        guard let maxOffset = calculateMaxOffset() else { return }
+        
+        // Računamo proporcionalni offset na osnovu trenutnog scale-a
+        let scaleRatio = newScale / scale
+        let newOffsetX = imageOffset.x * scaleRatio
+        let newOffsetY = imageOffset.y * scaleRatio
+        
+        // Ograničavamo pomeranje na maksimalne vrednosti
+        let clampedX = max(-maxOffset.x, min(maxOffset.x, newOffsetX))
+        let clampedY = max(-maxOffset.y, min(maxOffset.y, newOffsetY))
+        
+        // Ažuriramo poziciju
+        imageOffset = CGPoint(x: clampedX, y: clampedY)
+    }
+    
     func resetImage() {
         HapticManager.playImpact(style: .rigid)
         withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
             scale = minScale
             rotation = 0
+            imageOffset = .zero
+            lastFixedOffset = .zero
         }
-        imageOffset = .zero
         stopMotionTracking()
     }
     
