@@ -11,29 +11,29 @@ struct ProVersionView: View {
     var onRestore: () async -> Void
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Откључајте Pro верзију")
-                .font(.title)
+        VStack(spacing: 12) {
+            Text("pro.unlock_title", bundle: .main)
+                .font(.title3)
                 .bold()
             
-            VStack(alignment: .leading, spacing: 15) {
-                FeatureRow(icon: "plus.magnifyingglass", text: "Зум до 10x")
-                FeatureRow(icon: "slider.horizontal.3", text: "Прецизна контрола зумирања")
-                FeatureRow(icon: "gauge.with.dots.needle.50percent", text: "Оптимизоване перформансе")
-                FeatureRow(icon: "star.fill", text: "Приоритетна подршка")
+            VStack(alignment: .leading, spacing: 8) {
+                FeatureRow(icon: "plus.magnifyingglass", text: "pro.feature.zoom")
+                FeatureRow(icon: "slider.horizontal.3", text: "pro.feature.zoom_control")
+                FeatureRow(icon: "gauge.with.dots.needle.50percent", text: "pro.feature.performance")
+                FeatureRow(icon: "star.fill", text: "pro.feature.support")
             }
-            .padding(.vertical)
+            .padding(.vertical, 8)
             
-            Text("Само $2.99")
-                .font(.headline)
+            Text("pro.price", bundle: .main)
+                .font(.callout)
                 .foregroundColor(.blue)
             
             if let error = errorMessage {
                 Text(error)
                     .foregroundColor(.red)
-                    .font(.subheadline)
+                    .font(.caption)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 8)
             }
             
             Button(action: {
@@ -48,15 +48,15 @@ struct ProVersionView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                 } else {
-                    Text("Купи Pro верзију")
-                        .font(.headline)
+                    Text("pro.buy_button", bundle: .main)
+                        .font(.callout)
                         .foregroundColor(.white)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding()
+            .padding(.vertical, 8)
             .background(Color.blue)
-            .cornerRadius(10)
+            .cornerRadius(8)
             .disabled(isPurchasing || isRestoring)
             
             Button(action: {
@@ -71,7 +71,8 @@ struct ProVersionView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                 } else {
-                    Text("Обнови куповину")
+                    Text("pro.restore_button", bundle: .main)
+                        .font(.footnote)
                         .foregroundColor(.blue)
                 }
             }
@@ -81,30 +82,32 @@ struct ProVersionView: View {
                 HapticManager.playSelection()
                 isPresented = false
             }) {
-                Text("Можда касније")
+                Text("pro.maybe_later", bundle: .main)
+                    .font(.footnote)
                     .foregroundColor(.secondary)
             }
             .disabled(isPurchasing || isRestoring)
         }
-        .padding()
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(Color(UIColor.systemBackground))
-        .cornerRadius(20)
-        .shadow(radius: 20)
-        .padding()
+        .cornerRadius(16)
+        .shadow(radius: 16)
+        .padding(12)
     }
 }
 
 struct FeatureRow: View {
     let icon: String
-    let text: String
+    let text: LocalizedStringKey
     
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(.blue)
-                .font(.system(size: 20))
-            Text(text)
-                .font(.body)
+                .font(.system(size: 16))
+            Text(text, bundle: .main)
+                .font(.footnote)
         }
     }
 }

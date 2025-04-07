@@ -47,4 +47,15 @@
 "help.motion" = "Motion Tracking";
 "help.motion_desc" = "Enables/disables phone motion tracking";
 "help.settings" = "Settings";
-"help.settings_desc" = "Opens the settings menu"; 
+"help.settings_desc" = "Opens the settings menu";
+
+// Pro Version
+"pro.unlock_title" = "Unlock Pro Version";
+"pro.feature.zoom" = "Zoom up to 10x";
+"pro.feature.zoom_control" = "Precise zoom control";
+"pro.feature.performance" = "Optimized performance";
+"pro.feature.support" = "Priority support";
+"pro.price" = "Only $2.99";
+"pro.buy_button" = "Buy Pro Version";
+"pro.restore_button" = "Restore Purchase";
+"pro.maybe_later" = "Maybe Later"; 

@@ -22,4 +22,15 @@
 
 // Image Detail View
 "image_detail.size_info" = "Veličina slike: %@";
-"image_detail.offset_info" = "Trenutno pomeranje: %@px,%@px\nMaksimalno pomeranje: %@px,%@px"; 
+"image_detail.offset_info" = "Trenutno pomeranje: %@px,%@px\nMaksimalno pomeranje: %@px,%@px";
+
+// Pro Version
+"pro.unlock_title" = "Откључајте Pro верзију";
+"pro.feature.zoom" = "Зум до 10x";
+"pro.feature.zoom_control" = "Прецизна контрола зумирања";
+"pro.feature.performance" = "Оптимизоване перформансе";
+"pro.feature.support" = "Приоритетна подршка";
+"pro.price" = "Само $2.99";
+"pro.buy_button" = "Купи Pro верзију";
+"pro.restore_button" = "Обнови куповину";
+"pro.maybe_later" = "Можда касније"; 
