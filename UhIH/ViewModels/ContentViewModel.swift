@@ -18,7 +18,7 @@ class ContentViewModel: ObservableObject {
     @Published var imageOffset: CGPoint = .zero
     @Published var lastFixedOffset: CGPoint = .zero  // Nova promenljiva za čuvanje fiksne pozicije
     
-    // Pro funkционалности
+    // Pro funkcionalnosti
     @Published var isProUser: Bool = false
     @Published var hasExtremeZoom: Bool = false
     @Published var showProPrompt: Bool = false
@@ -479,23 +479,46 @@ class ContentViewModel: ObservableObject {
         lastFixedOffset = imageOffset
     }
     
-    private func updateImagePosition(pitch: Double, roll: Double) {
-        guard let maxOffset = calculateMaxOffset() else { return }
+    @MainActor
+    private func updateImagePosition(pitch: Double, roll: Double, viewSize: CGSize? = nil) {
+        let size = viewSize ?? CGSize(width: UIScreen.main.bounds.width,
+                                    height: UIScreen.main.bounds.height)
         
-        // Računamo delta pomeranje
-        let deltaX = CGFloat(roll) * 15.0
-        let deltaY = CGFloat(pitch) * 15.0
+        guard let maxOffset = calculateMaxOffset(viewSize: size) else { return }
         
-        // Proveravamo da li će novo pomeranje izaći iz granica
+        // Прилагођавамо вредности у зависности од оријентације
+        let orientation = UIDevice.current.orientation
+        let (adjustedPitch, adjustedRoll) = adjustMotionValues(pitch: pitch, roll: roll, orientation: orientation)
+        
+        // Рачунамо delta померање са прилагођеним вредностима
+        let deltaX = CGFloat(adjustedRoll) * 15.0
+        let deltaY = CGFloat(adjustedPitch) * 15.0
+        
+        // Проверавамо да ли ће ново померање изаћи из граница
         let newX = imageOffset.x + deltaX
         let newY = imageOffset.y + deltaY
         
-        // Ograničavamo pomeranje na maksimalne vrednosti
+        // Ограничавамо померање на максималне вредности
         let clampedX = max(-maxOffset.x, min(maxOffset.x, newX))
         let clampedY = max(-maxOffset.y, min(maxOffset.y, newY))
         
-        // Ažuriramo poziciju
+        // Ажурирамо позицију
         imageOffset = CGPoint(x: clampedX, y: clampedY)
+    }
+    
+    // Нова функција за прилагођавање вредности жироскопа оријентацији
+    private func adjustMotionValues(pitch: Double, roll: Double, orientation: UIDeviceOrientation) -> (pitch: Double, roll: Double) {
+        switch orientation {
+        case .landscapeLeft:
+            // Када је телефон ротиран у лево, замењујемо pitch и roll и инвертујемо pitch
+            return (roll, -pitch)
+        case .landscapeRight:
+            // Када је телефон ротиран у десно, замењујемо pitch и roll и инвертујемо roll
+            return (-roll, pitch)
+        default:
+            // У portrait оријентацији користимо оригиналне вредности
+            return (pitch, roll)
+        }
     }
     
     // Nova funkcija za ažuriranje pozicije tokom zoom operacija
@@ -558,16 +581,17 @@ class ContentViewModel: ObservableObject {
     }
     
     // Funkcija za računanje maksimalnog pomeranja slike u svakom smeru
-    private func calculateMaxOffset() -> (x: CGFloat, y: CGFloat)? {
+    @MainActor
+    func calculateMaxOffset(viewSize: CGSize? = nil) -> (x: CGFloat, y: CGFloat)? {
         guard let image = selectedImage else { return nil }
         
-        // Dobijamo veličinu ekrana
-        let screenWidth = UIScreen.main.bounds.width
-        let screenHeight = UIScreen.main.bounds.height
+        // Koristimo prosleđenu veličinu ili uzimamo veličinu ekrana sa main thread-a
+        let size = viewSize ?? CGSize(width: UIScreen.main.bounds.width,
+                                    height: UIScreen.main.bounds.height)
         
         // Računamo aspect ratio slike i ekrana
         let imageAspectRatio = image.size.width / image.size.height
-        let screenAspectRatio = screenWidth / screenHeight
+        let screenAspectRatio = size.width / size.height
         
         // Računamo stvarnu veličinu slike nakon skaliranja sa .fit
         let scaledWidth: CGFloat
@@ -575,17 +599,17 @@ class ContentViewModel: ObservableObject {
         
         if imageAspectRatio > screenAspectRatio {
             // Slika je šira od ekrana
-            scaledWidth = screenWidth * scale
+            scaledWidth = size.width * scale
             scaledHeight = scaledWidth / imageAspectRatio
         } else {
             // Slika je viša od ekrana
-            scaledHeight = screenHeight * scale
+            scaledHeight = size.height * scale
             scaledWidth = scaledHeight * imageAspectRatio
         }
         
         // Računamo maksimalno pomeranje uzimajući u obzir rotaciju
-        let maxOffsetX = max((scaledWidth - screenWidth) / 2, 0)
-        let maxOffsetY = max((scaledHeight - screenHeight) / 2, 0)
+        let maxOffsetX = max((scaledWidth - size.width) / 2, 0)
+        let maxOffsetY = max((scaledHeight - size.height) / 2, 0)
         
         // Ako je slika rotirana za 90° ili 270°, zamenjujemo X i Y vrednosti
         let normalizedRotation = abs(rotation.truncatingRemainder(dividingBy: 360))

@@ -17,6 +17,23 @@ struct ImageDetailView: View {
                         .scaleEffect(viewModel.scale)
                         .rotationEffect(.degrees(viewModel.rotation))
                         .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    if let maxOffset = viewModel.calculateMaxOffset(viewSize: geometry.size) {
+                                        let newX = value.translation.width + viewModel.lastFixedOffset.x
+                                        let newY = value.translation.height + viewModel.lastFixedOffset.y
+                                        
+                                        viewModel.imageOffset = CGPoint(
+                                            x: max(-maxOffset.x, min(maxOffset.x, newX)),
+                                            y: max(-maxOffset.y, min(maxOffset.y, newY))
+                                        )
+                                    }
+                                }
+                                .onEnded { value in
+                                    viewModel.lastFixedOffset = viewModel.imageOffset
+                                }
+                        )
                         .opacity(imageOpacity)
                         .onAppear {
                             withAnimation(.easeIn(duration: 0.8)) {
