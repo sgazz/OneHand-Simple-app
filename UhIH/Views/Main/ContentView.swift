@@ -60,56 +60,36 @@ struct ContentView: View {
                         VStack {
                             Spacer()
                             
-                            // Dugmad za izbor slike i pomoć
+                            // Help dugme
                             GeometryReader { geometry in
-                                ZStack {
-                                    // Dugme za izbor slike
-                                    PhotosPicker(selection: $viewModel.selectedItems,
-                                               maxSelectionCount: 1,
-                                               matching: .images) {
-                                        Text(LocalizedStringKey("welcome_screen.choose_image"))
-                                            .font(.headline)
+                                if !hideHelp {
+                                    Button(action: {
+                                        withAnimation {
+                                            showHelp = true
+                                        }
+                                    }) {
+                                        Image(systemName: "questionmark.circle.fill")
+                                            .font(.system(size: 15))
                                             .foregroundColor(.white)
-                                            .frame(width: 200, height: 50)
-                                            .background(Color.blue)
-                                            .cornerRadius(15)
+                                            .frame(width: 25, height: 25)
+                                            .background(Color(red: 0.8, green: 0.2, blue: 0.4))
+                                            .clipShape(Circle())
+                                            .overlay(
+                                                Circle()
+                                                    .stroke(Color.white.opacity(0.6), lineWidth: 0.5)
+                                            )
+                                            .shadow(color: Color.black.opacity(0.3), radius: 3, x: 0, y: 1.5)
                                     }
                                     .onTapGesture {
-                                        HapticManager.playSelection()
                                         showUI()
                                     }
-                                    
-                                    // Help dugme
-                                    if !hideHelp {
-                                        Button(action: {
-                                            withAnimation {
-                                                showHelp = true
-                                            }
-                                        }) {
-                                            Image(systemName: "questionmark.circle.fill")
-                                                .font(.system(size: 15))
-                                                .foregroundColor(.white)
-                                                .frame(width: 25, height: 25)
-                                                .background(Color(red: 0.8, green: 0.2, blue: 0.4))
-                                                .clipShape(Circle())
-                                                .overlay(
-                                                    Circle()
-                                                        .stroke(Color.white.opacity(0.6), lineWidth: 0.5)
-                                                )
-                                                .shadow(color: Color.black.opacity(0.3), radius: 3, x: 0, y: 1.5)
-                                        }
-                                        .onTapGesture {
-                                            showUI()
-                                        }
-                                        .offset(x: viewModel.selectedHand == .left ? -120 : 120, y: 0) // Zrcalimo Help dugme za levoruke
-                                    }
+                                    .position(
+                                        x: UIDevice.current.orientation.isLandscape ?
+                                            (viewModel.selectedHand == .left ? 140 : geometry.size.width - 140) :
+                                            geometry.size.width / 2,
+                                        y: geometry.size.height - 75
+                                    )
                                 }
-                                .position(
-                                    x: UIDevice.current.orientation.isLandscape ?
-                                        (viewModel.selectedHand == .left ? 140 : geometry.size.width - 140) :
-                                        geometry.size.width / 2,
-                                    y: geometry.size.height - 75
-                                )
                             }
                             .frame(height: 100)
                         }

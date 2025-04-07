@@ -19,12 +19,14 @@ struct SettingsView: View {
     var body: some View {
         GeometryReader { geometry in
             let isLandscape = geometry.size.width > geometry.size.height
+            let deviceIdiom = UIDevice.current.userInterfaceIdiom
             
             VStack(spacing: 0) {
                 Spacer()
+                    .frame(height: geometry.size.height * 0.15) // Додајемо фиксни простор на врху
                 
                 // Settings panel
-                VStack(spacing: 32) {
+                VStack(spacing: deviceIdiom == .pad ? 40 : 32) {
                     // Header - isti za obe orijentacije
                     ZStack {
                         // Done button
@@ -74,7 +76,9 @@ struct SettingsView: View {
                         Text(LocalizedStringKey("settings.title"))
                             .font(titleFont)
                             .foregroundStyle(.white)
+                            .padding(.top, deviceIdiom == .pad ? 16 : 8)
                     }
+                    .padding(.top, deviceIdiom == .pad ? 24 : 16)
                     
                     // Options Group sa uslovnim layoutom
                     if isLandscape {
@@ -86,7 +90,7 @@ struct SettingsView: View {
                             }
                             
                             // Options Group content
-                            VStack(spacing: 24) {
+                            VStack(spacing: deviceIdiom == .pad ? 32 : 24) {
                                 // Handedness Picker
                                 VStack(spacing: 0) {
                                     Picker("Handedness", selection: $viewModel.selectedHand) {
@@ -180,7 +184,7 @@ struct SettingsView: View {
                                 }
                                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
                             }
-                            .frame(width: geometry.size.width * 0.35)
+                            .frame(width: geometry.size.width * (deviceIdiom == .pad ? 0.4 : 0.35))
                             
                             if viewModel.selectedHand == .left {
                                 Spacer()
@@ -188,8 +192,8 @@ struct SettingsView: View {
                             }
                         }
                     } else {
-                        // Portrait layout - nepromenjeno
-                        VStack(spacing: 24) {
+                        // Portrait layout
+                        VStack(spacing: deviceIdiom == .pad ? 32 : 24) {
                             // Handedness Picker
                             VStack(spacing: 0) {
                                 Picker("Handedness", selection: $viewModel.selectedHand) {
@@ -300,8 +304,10 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.horizontal)
-                .padding(.bottom, geometry.safeAreaInsets.bottom + 16)
-                .offset(y: -100)
+                .padding(.bottom, geometry.safeAreaInsets.bottom + (deviceIdiom == .pad ? 24 : 16))
+                
+                Spacer()
+                    .frame(height: geometry.size.height * 0.15) // Додајемо фиксни простор на дну
             }
             .frame(maxWidth: .infinity)
             .background {
@@ -324,8 +330,8 @@ struct SettingsView: View {
     
     private func checkboxView(isChecked: Bool) -> some View {
         Image(systemName: isChecked ? "checkmark.square.fill" : "square")
-            .foregroundStyle(isChecked ? .blue : .white)
             .font(.system(size: checkboxSize))
+            .foregroundColor(isChecked ? settingsBackgroundColor : .gray)
     }
 }
 

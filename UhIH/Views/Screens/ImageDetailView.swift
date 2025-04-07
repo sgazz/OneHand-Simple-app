@@ -29,18 +29,40 @@ struct ImageDetailView: View {
                     Spacer()
                     
                     // Dugme za izbor slike
-                    PhotosPicker(selection: $viewModel.selectedItems,
-                               maxSelectionCount: 1,
-                               matching: .images) {
-                        Text(LocalizedStringKey("welcome_screen.choose_image"))
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(width: 200, height: 50)
-                            .background(Color.blue)
-                            .cornerRadius(15)
-                            .onTapGesture {
-                                HapticManager.playSelection()
+                    HStack {
+                        if viewModel.selectedHand == .left {
+                            PhotosPicker(selection: $viewModel.selectedItems,
+                                       maxSelectionCount: 1,
+                                       matching: .images) {
+                                Text(LocalizedStringKey("welcome_screen.choose_image"))
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 200, height: 50)
+                                    .background(Color.blue)
+                                    .cornerRadius(15)
+                                    .onTapGesture {
+                                        HapticManager.playSelection()
+                                    }
                             }
+                            .padding(.leading, 20)
+                            Spacer()
+                        } else {
+                            Spacer()
+                            PhotosPicker(selection: $viewModel.selectedItems,
+                                       maxSelectionCount: 1,
+                                       matching: .images) {
+                                Text(LocalizedStringKey("welcome_screen.choose_image"))
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(width: 200, height: 50)
+                                    .background(Color.blue)
+                                    .cornerRadius(15)
+                                    .onTapGesture {
+                                        HapticManager.playSelection()
+                                    }
+                            }
+                            .padding(.trailing, 20)
+                        }
                     }
                     .padding(.bottom, 50)
                 }
