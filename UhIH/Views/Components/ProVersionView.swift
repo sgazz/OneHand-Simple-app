@@ -11,103 +11,115 @@ struct ProVersionView: View {
     var onRestore: () async -> Void
     
     var body: some View {
-        VStack(spacing: 12) {
-            Text("pro.unlock_title", bundle: .main)
-                .font(.title3)
-                .bold()
+        GeometryReader { geometry in
+            let isLandscape = geometry.size.width > geometry.size.height
             
-            VStack(alignment: .leading, spacing: 8) {
-                FeatureRow(icon: "plus.magnifyingglass", text: "pro.feature.zoom")
-                FeatureRow(icon: "slider.horizontal.3", text: "pro.feature.zoom_control")
-                FeatureRow(icon: "gauge.with.dots.needle.50percent", text: "pro.feature.performance")
-                FeatureRow(icon: "star.fill", text: "pro.feature.support")
-            }
-            .padding(.vertical, 8)
-            
-            Text("pro.price", bundle: .main)
-                .font(.callout)
-                .foregroundColor(.blue)
-            
-            if let error = errorMessage {
-                Text(error)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 8)
-            }
-            
-            Button(action: {
-                HapticManager.playSelection()
-                Task {
-                    isPurchasing = true
-                    await onPurchase()
-                    isPurchasing = false
+            VStack(spacing: isLandscape ? 10 : 20) {
+                Text(LocalizedStringKey("pro.title"))
+                    .font(isLandscape ? .title2 : .title)
+                    .bold()
+                
+                VStack(alignment: .leading, spacing: isLandscape ? 8 : 15) {
+                    FeatureRow(icon: "plus.magnifyingglass", 
+                              text: LocalizedStringKey("pro.feature.zoom"),
+                              isLandscape: isLandscape)
+                    FeatureRow(icon: "slider.horizontal.3", 
+                              text: LocalizedStringKey("pro.feature.control"),
+                              isLandscape: isLandscape)
+                    FeatureRow(icon: "gauge.with.dots.needle.50percent", 
+                              text: LocalizedStringKey("pro.feature.performance"),
+                              isLandscape: isLandscape)
+                    FeatureRow(icon: "star.fill", 
+                              text: LocalizedStringKey("pro.feature.support"),
+                              isLandscape: isLandscape)
                 }
-            }) {
-                if isPurchasing {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Text("pro.buy_button", bundle: .main)
-                        .font(.callout)
-                        .foregroundColor(.white)
+                .padding(.vertical, isLandscape ? 5 : 10)
+                
+                Text(LocalizedStringKey("pro.price"))
+                    .font(isLandscape ? .callout : .headline)
+                    .foregroundColor(.blue)
+                
+                if let error = errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
                 }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(Color.blue)
-            .cornerRadius(8)
-            .disabled(isPurchasing || isRestoring)
-            
-            Button(action: {
-                HapticManager.playSelection()
-                Task {
-                    isRestoring = true
-                    await onRestore()
-                    isRestoring = false
+                
+                Button(action: {
+                    HapticManager.playSelection()
+                    Task {
+                        isPurchasing = true
+                        await onPurchase()
+                        isPurchasing = false
+                    }
+                }) {
+                    if isPurchasing {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    } else {
+                        Text(LocalizedStringKey("pro.purchase"))
+                            .font(isLandscape ? .callout : .headline)
+                            .foregroundColor(.white)
+                    }
                 }
-            }) {
-                if isRestoring {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                } else {
-                    Text("pro.restore_button", bundle: .main)
-                        .font(.footnote)
-                        .foregroundColor(.blue)
+                .frame(maxWidth: .infinity)
+                .padding(isLandscape ? 8 : 12)
+                .background(Color.blue)
+                .cornerRadius(10)
+                .disabled(isPurchasing || isRestoring)
+                
+                Button(action: {
+                    HapticManager.playSelection()
+                    Task {
+                        isRestoring = true
+                        await onRestore()
+                        isRestoring = false
+                    }
+                }) {
+                    if isRestoring {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                    } else {
+                        Text(LocalizedStringKey("pro.restore"))
+                            .font(isLandscape ? .footnote : .body)
+                            .foregroundColor(.blue)
+                    }
                 }
+                .disabled(isPurchasing || isRestoring)
+                
+                Button(action: {
+                    HapticManager.playSelection()
+                    isPresented = false
+                }) {
+                    Text(LocalizedStringKey("pro.later"))
+                        .font(isLandscape ? .footnote : .body)
+                        .foregroundColor(.secondary)
+                }
+                .disabled(isPurchasing || isRestoring)
             }
-            .disabled(isPurchasing || isRestoring)
-            
-            Button(action: {
-                HapticManager.playSelection()
-                isPresented = false
-            }) {
-                Text("pro.maybe_later", bundle: .main)
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-            }
-            .disabled(isPurchasing || isRestoring)
+            .padding(isLandscape ? 12 : 16)
+            .background(Color(UIColor.systemBackground))
+            .cornerRadius(20)
+            .shadow(radius: 20)
+            .padding()
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color(UIColor.systemBackground))
-        .cornerRadius(16)
-        .shadow(radius: 16)
-        .padding(12)
     }
 }
 
 struct FeatureRow: View {
     let icon: String
     let text: LocalizedStringKey
+    let isLandscape: Bool
     
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(.blue)
-                .font(.system(size: 16))
-            Text(text, bundle: .main)
-                .font(.footnote)
+                .font(.system(size: isLandscape ? 16 : 20))
+            Text(text)
+                .font(isLandscape ? .footnote : .body)
         }
     }
 }
