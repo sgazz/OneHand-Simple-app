@@ -23,7 +23,6 @@ struct SettingsView: View {
             
             VStack(spacing: 0) {
                 Spacer()
-                    .frame(height: geometry.size.height * 0.15) // Додајемо фиксни простор на врху
                 
                 // Settings panel
                 VStack(spacing: deviceIdiom == .pad ? 40 : 32) {
@@ -304,18 +303,14 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.horizontal)
-                .padding(.bottom, geometry.safeAreaInsets.bottom + (deviceIdiom == .pad ? 24 : 16))
-                
-                Spacer()
-                    .frame(height: geometry.size.height * 0.15) // Додајемо фиксни простор на дну
+                .padding(.bottom, geometry.safeAreaInsets.bottom + (deviceIdiom == .pad ? 16 : 8) + 75)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
                 settingsBackgroundColor
                     .opacity(0.85)
-                    .background(.thinMaterial)
+                    .background(.ultraThinMaterial)
             }
-            .cornerRadius(20, corners: [.topLeft, .topRight])
             .offset(y: isPresented ? 0 : geometry.size.height)
         }
         .ignoresSafeArea()
