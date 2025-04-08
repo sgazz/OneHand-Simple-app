@@ -32,7 +32,7 @@ struct ImageDetailView: View {
                 Color.black.edgesIgnoringSafeArea(.all)
                 
                 if let image = viewModel.selectedImage {
-                    image
+                    Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .scaleEffect(viewModel.scale)
