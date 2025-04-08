@@ -305,13 +305,18 @@ class ContentViewModel: ObservableObject {
     }
     
     func handleImageSelection(_ items: [PhotosPickerItem]) async {
+        print("handleImageSelection called with \(items.count) items")
         for item in items {
+            print("Processing item: \(item)")
             if let data = try? await item.loadTransferable(type: Data.self) {
+                print("Loaded data: \(data.count) bytes")
                 // Prvo učitavamo sliku da bismo dobili njene dimenzije
                 if let originalImage = UIImage(data: data) {
+                    print("Created UIImage: \(originalImage.size)")
                     await MainActor.run {
                         // Optimizujemo sliku pre čuvanja
                         if let optimizedImage = compressImage(originalImage) {
+                            print("Optimized image: \(optimizedImage.size)")
                             // Čistimo prethodne slike iz memorije
                             images.removeAll()
                             selectedImage = optimizedImage
@@ -319,9 +324,15 @@ class ContentViewModel: ObservableObject {
                             hasSelectedImage = true
                             scale = minScale
                             HapticManager.playImpact(style: .medium)
+                        } else {
+                            print("Failed to optimize image")
                         }
                     }
+                } else {
+                    print("Failed to create UIImage from data")
                 }
+            } else {
+                print("Failed to load transferable data")
             }
         }
     }
