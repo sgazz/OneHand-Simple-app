@@ -5,6 +5,24 @@ struct ImageDetailView: View {
     @ObservedObject var viewModel: ContentViewModel
     @State private var imageOpacity: Double = 0
     
+    private var chooseImageButton: some View {
+        PhotosPicker(selection: $viewModel.selectedItems,
+                    maxSelectionCount: 1,
+                    matching: .images) {
+            Text(LocalizedStringKey("welcome_screen.choose_image"))
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(width: 200, height: 50)
+                .background(Color.blue)
+                .cornerRadius(15)
+        }
+        .onChange(of: viewModel.selectedItems) { oldValue, newValue in
+            Task {
+                await viewModel.handleImageSelection(newValue)
+            }
+        }
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -47,38 +65,14 @@ struct ImageDetailView: View {
                     
                     // Dugme za izbor slike
                     HStack {
-                        if viewModel.selectedHand == .left {
-                            PhotosPicker(selection: $viewModel.selectedItems,
-                                       maxSelectionCount: 1,
-                                       matching: .images) {
-                                Text(LocalizedStringKey("welcome_screen.choose_image"))
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(width: 200, height: 50)
-                                    .background(Color.blue)
-                                    .cornerRadius(15)
-                                    .onTapGesture {
-                                        HapticManager.playSelection()
-                                    }
-                            }
-                            .padding(.leading, 20)
+                        if viewModel.selectedHand == .right {
                             Spacer()
+                            chooseImageButton
+                                .padding(.trailing, 20)
                         } else {
+                            chooseImageButton
+                                .padding(.leading, 20)
                             Spacer()
-                            PhotosPicker(selection: $viewModel.selectedItems,
-                                       maxSelectionCount: 1,
-                                       matching: .images) {
-                                Text(LocalizedStringKey("welcome_screen.choose_image"))
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(width: 200, height: 50)
-                                    .background(Color.blue)
-                                    .cornerRadius(15)
-                                    .onTapGesture {
-                                        HapticManager.playSelection()
-                                    }
-                            }
-                            .padding(.trailing, 20)
                         }
                     }
                     .padding(.bottom, 50)
