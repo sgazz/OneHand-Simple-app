@@ -29,10 +29,10 @@ struct ImageDetailView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                BackgroundGradientView()
+                Color.black.edgesIgnoringSafeArea(.all)
                 
                 if let image = viewModel.selectedImage {
-                    Image(uiImage: image)
+                    image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .scaleEffect(viewModel.scale)
@@ -61,6 +61,10 @@ struct ImageDetailView: View {
                                 imageOpacity = 1
                             }
                         }
+                } else {
+                    Text(LocalizedStringKey("image_detail.no_image"))
+                        .foregroundColor(.white)
+                        .font(.title2)
                 }
                 
                 VStack {
@@ -107,4 +111,8 @@ struct ImageDetailView: View {
             }
         }
     }
+}
+
+#Preview {
+    ImageDetailView(viewModel: ContentViewModel())
 } 
