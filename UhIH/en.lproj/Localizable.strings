@@ -47,4 +47,33 @@
 "help.motion" = "Motion Tracking";
 "help.motion_desc" = "Enables/disables phone motion tracking";
 "help.settings" = "Settings";
-"help.settings_desc" = "Opens the settings menu"; 
+"help.settings_desc" = "Opens the settings menu";
+
+// Pro Version
+"pro.title" = "Unlock Pro Version";
+"pro.feature.zoom" = "Zoom up to 10x";
+"pro.feature.control" = "Precise zoom control";
+"pro.feature.performance" = "Optimized performance";
+"pro.feature.support" = "Priority support";
+"pro.price" = "Only $2.99";
+"pro.purchase" = "Buy Pro Version";
+"pro.restore" = "Restore Purchase";
+"pro.later" = "Maybe Later";
+
+// Extreme Zoom
+"extreme.title" = "Extreme Zoom";
+"extreme.feature.zoom" = "All zoom levels (up to 20x)";
+"extreme.feature.pro" = "Includes all Pro features";
+"extreme.feature.levels" = "Additional levels: 15x and 20x";
+"extreme.feature.advanced" = "For advanced users";
+"extreme.price" = "Only $0.99";
+"extreme.purchase" = "Buy Extreme Zoom";
+"extreme.restore" = "Restore Purchase";
+"extreme.later" = "Maybe Later";
+
+// Store Errors
+"store.error.not_found" = "Pro version is not available for purchase.";
+"store.error.cancelled" = "Purchase was cancelled.";
+"store.error.pending" = "Purchase is pending.";
+"store.error.verification" = "Error verifying purchase.";
+"store.error.unknown" = "An unknown error occurred."; 

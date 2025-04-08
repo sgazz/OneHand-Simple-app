@@ -188,15 +188,15 @@ enum StoreError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .productNotFound:
-            return "Pro верзија није доступна за куповину."
+            return NSLocalizedString("store.error.not_found", comment: "Pro version is not available")
         case .userCancelled:
-            return "Куповина је отказана."
+            return NSLocalizedString("store.error.cancelled", comment: "Purchase was cancelled")
         case .pending:
-            return "Куповина је на чекању."
+            return NSLocalizedString("store.error.pending", comment: "Purchase is pending")
         case .verificationFailed:
-            return "Грешка при верификацији куповине."
+            return NSLocalizedString("store.error.verification", comment: "Error verifying purchase")
         case .unknown:
-            return "Дошло је до непознате грешке."
+            return NSLocalizedString("store.error.unknown", comment: "Unknown error occurred")
         }
     }
 } 
