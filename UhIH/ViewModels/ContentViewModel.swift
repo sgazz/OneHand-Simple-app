@@ -2,9 +2,14 @@ import SwiftUI
 import PhotosUI
 import Combine
 import StoreKit
+import CoreMotion
+import QuartzCore
 
 @MainActor
 class ContentViewModel: ObservableObject {
+    // Константе за слике
+    private let maxImageDimension: CGFloat = 2048.0 // Максимална димензија слике у пикселима
+    
     @Published var selectedHand: Handedness?
     @Published var selectedItems: [PhotosPickerItem] = []
     @Published var images: [UIImage] = []
@@ -16,13 +21,26 @@ class ContentViewModel: ObservableObject {
     @Published var isRotating = false
     @Published var isMotionTrackingEnabled: Bool = false
     @Published var imageOffset: CGPoint = .zero
-    @Published var lastFixedOffset: CGPoint = .zero  // Nova promenljiva za čuvanje fiksne pozicije
+    @Published var lastFixedOffset: CGPoint = .zero
     
-    // Pro funkcionalnosti
+    // Pro функционалности
     @Published var isProUser: Bool = false
-    @Published var hasExtremeZoom: Bool = false
     @Published var showProPrompt: Bool = false
-    @Published var showExtremeZoomPrompt: Bool = false
+    
+    // Константи за зум
+    private let zoomSpeed: CGFloat = 0.1  // Константна брзина зума
+    
+    // Константи за ротацију
+    private let rotationSpeed: Double = 90.0 // степени у секунди
+    
+    // Променљиве за анимацију
+    private var displayLink: CADisplayLink?
+    private var lastUpdateTime: CFTimeInterval = 0
+    
+    // Motion tracking
+    private let motionManager = MotionManager()
+    private var cancellables = Set<AnyCancellable>()
+    private var scenePhaseObserver: AnyCancellable?
     
     // Нивои зума
     enum ZoomLevel: CGFloat, CaseIterable {
@@ -36,8 +54,6 @@ class ContentViewModel: ObservableObject {
         case x8 = 8.0
         case x9 = 9.0
         case x10 = 10.0
-        case x15 = 15.0
-        case x20 = 20.0
         
         static var freeVersionLevels: [ZoomLevel] {
             [.x1, .x2, .x3, .x4]
@@ -46,106 +62,11 @@ class ContentViewModel: ObservableObject {
         static var proVersionLevels: [ZoomLevel] {
             [.x1, .x2, .x3, .x4, .x5, .x6, .x7, .x8, .x9, .x10]
         }
-        
-        static var extremeZoomLevels: [ZoomLevel] {
-            [.x15, .x20]
-        }
     }
     
     // Модификујемо постојеће променљиве
     let minScale: CGFloat = ZoomLevel.x1.rawValue
-    let maxScale: CGFloat = ZoomLevel.x20.rawValue
-    
-    // Функција за проверу доступности нивоа зума
-    func isZoomLevelAvailable(_ level: ZoomLevel) -> Bool {
-        if level.rawValue <= 4.0 {
-            return true // Бесплатна верзија
-        }
-        if level.rawValue <= 10.0 {
-            return isProUser // Pro верзија
-        }
-        return hasExtremeZoom // Extreme Zoom addon
-    }
-    
-    // Модификујемо функцију за зумирање
-    func zoomTo(_ level: ZoomLevel) {
-        if !isZoomLevelAvailable(level) {
-            if !isProUser {
-                showProVersionPrompt()
-            } else if isProUser && level.rawValue > 10.0 {
-                showExtremeZoomPrompt = true
-                HapticManager.playNotification(type: .warning)
-            }
-            return
-        }
-        
-        HapticManager.playZoom(zoomIn: level.rawValue > scale)
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-            scale = level.rawValue
-        }
-    }
-    
-    // Додајемо функцију за приказ Pro верзије
-    private func showProVersionPrompt() {
-        if !isProUser {
-            showProPrompt = true
-            HapticManager.playNotification(type: .warning)
-        }
-    }
-    
-    // Модификујемо функције за зумирање
-    func zoomIn() {
-        let currentLevel = ZoomLevel.allCases.first(where: { $0.rawValue > scale }) ?? .x20
-        if !isZoomLevelAvailable(currentLevel) {
-            if !isProUser && currentLevel.rawValue <= 10.0 {
-                showProVersionPrompt()
-            } else if isProUser && currentLevel.rawValue > 10.0 {
-                showExtremeZoomPrompt = true
-                HapticManager.playNotification(type: .warning)
-            }
-            return
-        }
-        zoomTo(currentLevel)
-    }
-    
-    func zoomOut() {
-        let currentLevel = ZoomLevel.allCases.last(where: { $0.rawValue < scale }) ?? .x1
-        zoomTo(currentLevel)
-    }
-    
-    private var displayLink: CADisplayLink?
-    private var currentZoomSpeed: CGFloat = 0.02
-    private var lastUpdateTime: TimeInterval = 0
-    private let rotationSpeed: Double = 180.0 // Konstantna brzina rotacije
-    
-    let baseZoomSpeed: CGFloat = 0.02 // Bazna brzina kontinuiranog zooma
-    let maxZoomSpeed: CGFloat = 0.15 // Maksimalna brzina zooma
-    let accelerationFactor: CGFloat = 1.2 // Faktor ubrzanja
-    
-    private let motionManager = MotionManager()
-    
-    // Set za čuvanje Combine subscriptions
-    private var cancellables = Set<AnyCancellable>()
-    
-    // Додајемо observer za сцену
-    private var scenePhaseObserver: AnyCancellable?
-    
-    // Додајемо нове константе за оптимизацију величине
-    private let screenScale = UIScreen.main.scale
-    private var maxImageDimension: CGFloat {
-        let totalMemory = ProcessInfo.processInfo.physicalMemory
-        let screenSize = UIScreen.main.bounds.size
-        
-        // Прилагођавамо maximum diмензију слике на основу меморије уређаја
-        // и величине екрана
-        if totalMemory < 2_000_000_000 { // 2GB
-            return min(1536, max(screenSize.width, screenSize.height) * screenScale)
-        } else if totalMemory < 4_000_000_000 { // 4GB
-            return min(2048, max(screenSize.width, screenSize.height) * screenScale)
-        } else {
-            return min(3072, max(screenSize.width, screenSize.height) * screenScale)
-        }
-    }
+    let maxScale: CGFloat = ZoomLevel.x10.rawValue
     
     private let storeManager = StoreManager.shared
     
@@ -219,7 +140,6 @@ class ContentViewModel: ObservableObject {
     
     func startContinuousZoomIn() {
         isZooming = true
-        currentZoomSpeed = baseZoomSpeed
         lastUpdateTime = CACurrentMediaTime()
         
         displayLink = CADisplayLink(target: self, selector: #selector(handleZoomIn))
@@ -228,7 +148,6 @@ class ContentViewModel: ObservableObject {
     
     func startContinuousZoomOut() {
         isZooming = true
-        currentZoomSpeed = baseZoomSpeed
         lastUpdateTime = CACurrentMediaTime()
         
         displayLink = CADisplayLink(target: self, selector: #selector(handleZoomOut))
@@ -242,7 +161,7 @@ class ContentViewModel: ObservableObject {
         let deltaTime = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
         
-        let nextScale = min(scale + currentZoomSpeed * CGFloat(deltaTime * 60), maxScale)
+        let nextScale = min(scale + zoomSpeed * CGFloat(deltaTime * 60), maxScale)
         if let nextLevel = ZoomLevel.allCases.first(where: { $0.rawValue >= nextScale }) {
             if !isZoomLevelAvailable(nextLevel) {
                 stopZooming()
@@ -251,10 +170,8 @@ class ContentViewModel: ObservableObject {
             }
         }
         
-        // Ažuriramo poziciju pre promene scale-a
         updateOffsetForZoom(newScale: nextScale)
         scale = nextScale
-        currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
     }
     
     @objc private func handleZoomOut() {
@@ -264,7 +181,7 @@ class ContentViewModel: ObservableObject {
         let deltaTime = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
         
-        let nextScale = max(scale - currentZoomSpeed * CGFloat(deltaTime * 60), minScale)
+        let nextScale = max(scale - zoomSpeed * CGFloat(deltaTime * 60), minScale)
         if let nextLevel = ZoomLevel.allCases.first(where: { $0.rawValue >= nextScale }) {
             if !isZoomLevelAvailable(nextLevel) {
                 stopZooming()
@@ -273,10 +190,8 @@ class ContentViewModel: ObservableObject {
             }
         }
         
-        // Ažuriramo poziciju pre promene scale-a
         updateOffsetForZoom(newScale: nextScale)
         scale = nextScale
-        currentZoomSpeed = min(currentZoomSpeed * accelerationFactor, maxZoomSpeed)
     }
     
     func stopZooming() {
@@ -290,16 +205,15 @@ class ContentViewModel: ObservableObject {
             showProVersionPrompt()
             return
         }
-        
         HapticManager.playZoom(zoomIn: true)
-        withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
+        withAnimation(.spring(response: 1.2, dampingFraction: 0.8)) {
             scale = maxScale
         }
     }
     
     func zoomToMin() {
         HapticManager.playZoom(zoomIn: false)
-        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+        withAnimation(.spring(response: 1.0, dampingFraction: 0.8)) {
             scale = minScale
         }
     }
@@ -467,13 +381,13 @@ class ContentViewModel: ObservableObject {
     private func startMotionTracking() {
         guard selectedImage != nil else { return }
         
-        // Kalibrišemo trenutni položaj telefona kao referentnu tačku
+        // Калибришемо тренутни положај телефона као референтну тачку
         motionManager.calibrate()
         
-        // Startujemo praćenje pokreta
+        // Покрећемо праћење покрета
         motionManager.startTracking()
         
-        // Pratimo promene u nagibu sa optimizovanim throttle i debounce
+        // Пратимо промене у нагибу са оптимизованим throttle и debounce
         motionManager.$pitch
             .combineLatest(motionManager.$roll)
             .throttle(for: .milliseconds(16), scheduler: RunLoop.main, latest: true) // 60fps
@@ -486,7 +400,7 @@ class ContentViewModel: ObservableObject {
     
     private func stopMotionTracking() {
         motionManager.stopTracking()
-        // Čuvamo trenutnu poziciju kao fiksnu
+        // Чувамо тренутну позицију као фиксну
         lastFixedOffset = imageOffset
     }
     
@@ -659,34 +573,30 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-    func purchaseExtremeZoom() async {
-        do {
-            try await storeManager.purchaseExtremeZoom()
-            await MainActor.run {
-                hasExtremeZoom = storeManager.hasExtremeZoom
-                showExtremeZoomPrompt = false
-                HapticManager.playSuccess()
-            }
-        } catch {
-            await MainActor.run {
-                showExtremeZoomPrompt = false
-                HapticManager.playError()
-            }
-        }
-    }
-    
     func restorePurchases() async {
         do {
             try await storeManager.restorePurchases()
             await MainActor.run {
                 isProUser = storeManager.isProUser
-                hasExtremeZoom = storeManager.hasExtremeZoom
-                if isProUser || hasExtremeZoom {
+                if isProUser {
                     HapticManager.playSuccess()
                 }
             }
         } catch {
             HapticManager.playError()
         }
+    }
+    
+    private func isZoomLevelAvailable(_ level: ZoomLevel) -> Bool {
+        if isProUser {
+            return ZoomLevel.proVersionLevels.contains(level)
+        } else {
+            return ZoomLevel.freeVersionLevels.contains(level)
+        }
+    }
+    
+    private func showProVersionPrompt() {
+        showProPrompt = true
+        HapticManager.playWarning()
     }
 } 
