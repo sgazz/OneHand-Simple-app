@@ -11,35 +11,7 @@ struct ImageDetailView: View {
                 BackgroundGradientView()
                 
                 if let image = viewModel.selectedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .scaleEffect(viewModel.scale)
-                        .rotationEffect(.degrees(viewModel.rotation))
-                        .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
-                        .gesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    if let maxOffset = viewModel.calculateMaxOffset(viewSize: geometry.size) {
-                                        let newX = value.translation.width + viewModel.lastFixedOffset.x
-                                        let newY = value.translation.height + viewModel.lastFixedOffset.y
-                                        
-                                        viewModel.imageOffset = CGPoint(
-                                            x: max(-maxOffset.x, min(maxOffset.x, newX)),
-                                            y: max(-maxOffset.y, min(maxOffset.y, newY))
-                                        )
-                                    }
-                                }
-                                .onEnded { value in
-                                    viewModel.lastFixedOffset = viewModel.imageOffset
-                                }
-                        )
-                        .opacity(imageOpacity)
-                        .onAppear {
-                            withAnimation(.easeIn(duration: 0.8)) {
-                                imageOpacity = 1
-                            }
-                        }
+                    detailedImageView(image: image, geometry: geometry)
                 } else {
                     Text(LocalizedStringKey("image_detail.no_image"))
                         .foregroundColor(.white)
@@ -108,14 +80,6 @@ struct ImageDetailView: View {
                 }
                 .presentationDetents([.medium])
             }
-            .sheet(isPresented: $viewModel.showExtremeZoomPrompt) {
-                ExtremeZoomView(isPresented: $viewModel.showExtremeZoomPrompt) {
-                    await viewModel.purchaseExtremeZoom()
-                } onRestore: {
-                    await viewModel.restorePurchases()
-                }
-                .presentationDetents([.medium])
-            }
         }
         .onChange(of: viewModel.selectedImage) { oldValue, newValue in
             imageOpacity = 0 // Resetujemo opacity na 0
@@ -125,6 +89,37 @@ struct ImageDetailView: View {
                 }
             }
         }
+    }
+    
+    private func detailedImageView(image: UIImage, geometry: GeometryProxy) -> some View {
+        Image(uiImage: image)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .scaleEffect(viewModel.scale)
+            .rotationEffect(.degrees(viewModel.rotation))
+            .offset(x: viewModel.imageOffset.x, y: viewModel.imageOffset.y)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        if let maxOffset = viewModel.calculateMaxOffset(viewSize: geometry.size) {
+                            let newX = value.translation.width + viewModel.lastFixedOffset.x
+                            let newY = value.translation.height + viewModel.lastFixedOffset.y
+                            viewModel.imageOffset = CGPoint(
+                                x: max(-maxOffset.x, min(maxOffset.x, newX)),
+                                y: max(-maxOffset.y, min(maxOffset.y, newY))
+                            )
+                        }
+                    }
+                    .onEnded { _ in
+                        viewModel.lastFixedOffset = viewModel.imageOffset
+                    }
+            )
+            .opacity(imageOpacity)
+            .onAppear {
+                withAnimation(.easeIn(duration: 0.8)) {
+                    imageOpacity = 1
+                }
+            }
     }
 }
 
