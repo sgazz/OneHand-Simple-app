@@ -1,0 +1,79 @@
+// Welcome Guide
+"welcome.title" = "OneHand Simple App";
+"welcome.section1.title" = "开始使用";
+"welcome.section1.content" = "智能、简单，专为您独特的设备交互方式而设计";
+"welcome.section2.title" = "基本功能";
+"welcome.section2.content" = "选择您想要使用设备的方式，并从图库中选择图片开始";
+"welcome.section3.title" = "手势";
+"welcome.section3.content" = "在径向菜单中调整缩放、旋转和倾斜。倾斜设备以移动图像";
+"welcome.section4.title" = "提示";
+"welcome.section4.content" = "为获得最佳效果，请保持设备稳定并使用小幅、可控的动作";
+"welcome.always_show" = "始终显示此屏幕";
+"welcome.skip" = "跳过";
+"welcome.next" = "下一步";
+"welcome.got_it" = "明白了";
+
+// Welcome Screen
+"welcome_screen.title" = "OneHand Simple App";
+"welcome_screen.select_hand" = "选择您的惯用手";
+"welcome_screen.left_hand" = "左手";
+"welcome_screen.right_hand" = "右手";
+"welcome_screen.choose_image" = "选择图片";
+
+// Image Detail View
+"image_detail.no_image" = "未选择图片";
+"image_detail.size_info" = "图片大小：%@\n缩放级别：%.1fx\n旋转：%.1f°";
+"image_detail.offset_info" = "当前偏移：%@px,%@px\n最大偏移：%@px,%@px";
+
+// Settings
+"settings.title" = "设置";
+"settings.done" = "完成";
+"settings.left_handed" = "左手使用";
+"settings.right_handed" = "右手使用";
+"settings.show_welcome" = "显示欢迎指南";
+"settings.auto_hide" = "自动隐藏界面";
+"settings.hide_help" = "隐藏帮助";
+
+// Help View
+"help.title" = "如何使用按钮";
+"help.central_button" = "中央按钮";
+"help.central_button_desc" = "打开/关闭径向菜单";
+"help.zoom" = "缩放";
+"help.zoom_desc" = "长按持续缩放\n双击最大/最小缩放";
+"help.rotation" = "旋转";
+"help.rotation_desc" = "长按持续旋转\n双击旋转45°";
+"help.reset" = "重置";
+"help.reset_desc" = "将图片重置为初始状态";
+"help.motion" = "动作追踪";
+"help.motion_desc" = "启用/禁用手机动作追踪";
+"help.settings" = "设置";
+"help.settings_desc" = "打开设置菜单";
+
+// Pro Version
+"pro.title" = "解锁专业版";
+"pro.feature.zoom" = "最高10倍缩放";
+"pro.feature.control" = "精确缩放控制";
+"pro.feature.performance" = "优化性能";
+"pro.feature.support" = "优先支持";
+"pro.price" = "仅¥20";
+"pro.purchase" = "购买专业版";
+"pro.restore" = "恢复购买";
+"pro.later" = "稍后再说";
+
+// Extreme Zoom
+"extreme.title" = "极限缩放";
+"extreme.feature.zoom" = "所有缩放级别（最高20倍）";
+"extreme.feature.pro" = "包含所有专业版功能";
+"extreme.feature.levels" = "额外级别：15倍和20倍";
+"extreme.feature.advanced" = "适用于高级用户";
+"extreme.price" = "仅¥7";
+"extreme.purchase" = "购买极限缩放";
+"extreme.restore" = "恢复购买";
+"extreme.later" = "稍后再说";
+
+// Store Errors
+"store.error.not_found" = "专业版不可购买。";
+"store.error.cancelled" = "购买已取消。";
+"store.error.pending" = "购买正在处理中。";
+"store.error.verification" = "购买验证出错。";
+"store.error.unknown" = "发生未知错误。"; 

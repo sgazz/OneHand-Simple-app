@@ -1,0 +1,79 @@
+// Welcome Guide
+"welcome.title" = "OneHand Simple App";
+"welcome.section1.title" = "はじめに";
+"welcome.section1.content" = "スマートでシンプル、あなたの独自のデバイス操作方法に合わせて設計されています";
+"welcome.section2.title" = "基本機能";
+"welcome.section2.content" = "デバイスの使用方法を選択し、ギャラリーから画像を選んで始めましょう";
+"welcome.section3.title" = "ジェスチャー";
+"welcome.section3.content" = "ラジアルメニューでズーム、回転、傾きを調整。デバイスを傾けて画像を移動";
+"welcome.section4.title" = "ヒント";
+"welcome.section4.content" = "最良の結果を得るには、デバイスを安定させ、小さく制御された動きを使用してください";
+"welcome.always_show" = "この画面を常に表示";
+"welcome.skip" = "スキップ";
+"welcome.next" = "次へ";
+"welcome.got_it" = "了解";
+
+// Welcome Screen
+"welcome_screen.title" = "OneHand Simple App";
+"welcome_screen.select_hand" = "利き手を選択";
+"welcome_screen.left_hand" = "左手";
+"welcome_screen.right_hand" = "右手";
+"welcome_screen.choose_image" = "画像を選択";
+
+// Image Detail View
+"image_detail.no_image" = "画像が選択されていません";
+"image_detail.size_info" = "画像サイズ: %@\nズームレベル: %.1fx\n回転: %.1f°";
+"image_detail.offset_info" = "現在のオフセット: %@px,%@px\n最大オフセット: %@px,%@px";
+
+// Settings
+"settings.title" = "設定";
+"settings.done" = "完了";
+"settings.left_handed" = "左利き";
+"settings.right_handed" = "右利き";
+"settings.show_welcome" = "ウェルカムガイドを表示";
+"settings.auto_hide" = "インターフェースを自動的に隠す";
+"settings.hide_help" = "ヘルプを隠す";
+
+// Help View
+"help.title" = "ボタンの使い方";
+"help.central_button" = "中央ボタン";
+"help.central_button_desc" = "ラジアルメニューを開く/閉じる";
+"help.zoom" = "ズーム";
+"help.zoom_desc" = "長押しで連続ズーム\nダブルタップで最大/最小ズーム";
+"help.rotation" = "回転";
+"help.rotation_desc" = "長押しで連続回転\nダブルタップで45°回転";
+"help.reset" = "リセット";
+"help.reset_desc" = "画像を初期状態に戻す";
+"help.motion" = "モーショントラッキング";
+"help.motion_desc" = "電話の動き追跡をオン/オフ";
+"help.settings" = "設定";
+"help.settings_desc" = "設定メニューを開く";
+
+// Pro Version
+"pro.title" = "Proバージョンのロック解除";
+"pro.feature.zoom" = "10倍までズーム";
+"pro.feature.control" = "精密なズームコントロール";
+"pro.feature.performance" = "最適化されたパフォーマンス";
+"pro.feature.support" = "優先サポート";
+"pro.price" = "¥350のみ";
+"pro.purchase" = "Proバージョンを購入";
+"pro.restore" = "購入を復元";
+"pro.later" = "後で";
+
+// Extreme Zoom
+"extreme.title" = "エクストリームズーム";
+"extreme.feature.zoom" = "すべてのズームレベル（最大20倍）";
+"extreme.feature.pro" = "すべてのPro機能を含む";
+"extreme.feature.levels" = "追加レベル：15倍と20倍";
+"extreme.feature.advanced" = "上級ユーザー向け";
+"extreme.price" = "¥120のみ";
+"extreme.purchase" = "エクストリームズームを購入";
+"extreme.restore" = "購入を復元";
+"extreme.later" = "後で";
+
+// Store Errors
+"store.error.not_found" = "Proバージョンは購入できません。";
+"store.error.cancelled" = "購入がキャンセルされました。";
+"store.error.pending" = "購入は保留中です。";
+"store.error.verification" = "購入の確認中にエラーが発生しました。";
+"store.error.unknown" = "不明なエラーが発生しました。"; 

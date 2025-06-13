@@ -1,0 +1,79 @@
+// Welcome Guide
+"welcome.title" = "OneHand Simple App";
+"welcome.section1.title" = "Erste Schritte";
+"welcome.section1.content" = "Intelligent, einfach und auf Ihre einzigartige Art der Gerätenutzung zugeschnitten";
+"welcome.section2.title" = "Grundfunktionen";
+"welcome.section2.content" = "Wählen Sie aus, wie Sie Ihr Gerät nutzen möchten und wählen Sie ein Bild aus der Galerie";
+"welcome.section3.title" = "Gesten";
+"welcome.section3.content" = "Passen Sie Zoom, Rotation und Neigung im Radialmenü an. Neigen Sie das Gerät, um das Bild zu bewegen";
+"welcome.section4.title" = "Tipps";
+"welcome.section4.content" = "Halten Sie das Gerät für beste Ergebnisse ruhig und machen Sie kleine, kontrollierte Bewegungen";
+"welcome.always_show" = "Diesen Bildschirm immer anzeigen";
+"welcome.skip" = "Überspringen";
+"welcome.next" = "Weiter";
+"welcome.got_it" = "Verstanden";
+
+// Welcome Screen
+"welcome_screen.title" = "OneHand Simple App";
+"welcome_screen.select_hand" = "Wählen Sie Ihre Händigkeit";
+"welcome_screen.left_hand" = "Linkshändig";
+"welcome_screen.right_hand" = "Rechtshändig";
+"welcome_screen.choose_image" = "Bild auswählen";
+
+// Image Detail View
+"image_detail.no_image" = "Kein Bild ausgewählt";
+"image_detail.size_info" = "Bildgröße: %@\nZoom-Stufe: %.1fx\nRotation: %.1f°";
+"image_detail.offset_info" = "Aktuelle Position: %@px,%@px\nMaximale Position: %@px,%@px";
+
+// Settings
+"settings.title" = "Einstellungen";
+"settings.done" = "Fertig";
+"settings.left_handed" = "Linkshändig";
+"settings.right_handed" = "Rechtshändig";
+"settings.show_welcome" = "Willkommensführung anzeigen";
+"settings.auto_hide" = "Oberfläche automatisch ausblenden";
+"settings.hide_help" = "Hilfe ausblenden";
+
+// Help View
+"help.title" = "Verwendung der Schaltflächen";
+"help.central_button" = "Zentrale Schaltfläche";
+"help.central_button_desc" = "Öffnet/schließt das Radialmenü";
+"help.zoom" = "Zoom";
+"help.zoom_desc" = "Lang drücken zum kontinuierlichen Zoomen\nDoppeltippen für maximalen/minimalen Zoom";
+"help.rotation" = "Rotation";
+"help.rotation_desc" = "Lang drücken für kontinuierliche Rotation\nDoppeltippen für 45° Rotation";
+"help.reset" = "Zurücksetzen";
+"help.reset_desc" = "Setzt das Bild auf den Ausgangszustand zurück";
+"help.motion" = "Bewegungsverfolgung";
+"help.motion_desc" = "Aktiviert/deaktiviert die Bewegungsverfolgung";
+"help.settings" = "Einstellungen";
+"help.settings_desc" = "Öffnet das Einstellungsmenü";
+
+// Pro Version
+"pro.title" = "Pro-Version freischalten";
+"pro.feature.zoom" = "Zoom bis zu 10x";
+"pro.feature.control" = "Präzise Zoomsteuerung";
+"pro.feature.performance" = "Optimierte Leistung";
+"pro.feature.support" = "Prioritäts-Support";
+"pro.price" = "Nur 2,99 €";
+"pro.purchase" = "Pro-Version kaufen";
+"pro.restore" = "Kauf wiederherstellen";
+"pro.later" = "Vielleicht später";
+
+// Extreme Zoom
+"extreme.title" = "Extremer Zoom";
+"extreme.feature.zoom" = "Alle Zoomstufen (bis zu 20x)";
+"extreme.feature.pro" = "Enthält alle Pro-Funktionen";
+"extreme.feature.levels" = "Zusätzliche Stufen: 15x und 20x";
+"extreme.feature.advanced" = "Für fortgeschrittene Benutzer";
+"extreme.price" = "Nur 0,99 €";
+"extreme.purchase" = "Extremen Zoom kaufen";
+"extreme.restore" = "Kauf wiederherstellen";
+"extreme.later" = "Vielleicht später";
+
+// Store Errors
+"store.error.not_found" = "Pro-Version ist nicht zum Kauf verfügbar.";
+"store.error.cancelled" = "Kauf wurde abgebrochen.";
+"store.error.pending" = "Kauf wird bearbeitet.";
+"store.error.verification" = "Fehler bei der Kaufüberprüfung.";
+"store.error.unknown" = "Ein unbekannter Fehler ist aufgetreten."; 

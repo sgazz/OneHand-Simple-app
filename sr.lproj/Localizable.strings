@@ -1,0 +1,79 @@
+// Welcome Guide
+"welcome.title" = "OneHand Simple App";
+"welcome.section1.title" = "Први кораци";
+"welcome.section1.content" = "Паметна, једноставна и прилагођена вашем јединственом начину коришћења уређаја";
+"welcome.section2.title" = "Основне функције";
+"welcome.section2.content" = "Изаберите како желите да користите уређај и одаберите слику из галерије да бисте почели";
+"welcome.section3.title" = "Гестови";
+"welcome.section3.content" = "Подесите зум, ротацију и нагиб у радијалном менију. Нагните уређај да померите слику";
+"welcome.section4.title" = "Савети";
+"welcome.section4.content" = "За најбоље резултате, држите уређај стабилно и користите мале, контролисане покрете";
+"welcome.always_show" = "Увек прикажи овај екран";
+"welcome.skip" = "Прескочи";
+"welcome.next" = "Даље";
+"welcome.got_it" = "Разумем";
+
+// Welcome Screen
+"welcome_screen.title" = "OneHand Simple App";
+"welcome_screen.select_hand" = "Изаберите доминантну руку";
+"welcome_screen.left_hand" = "Лева рука";
+"welcome_screen.right_hand" = "Десна рука";
+"welcome_screen.choose_image" = "Изабери слику";
+
+// Image Detail View
+"image_detail.no_image" = "Није изабрана слика";
+"image_detail.size_info" = "Величина слике: %@\nНиво зума: %.1fx\nРотација: %.1f°";
+"image_detail.offset_info" = "Тренутни померај: %@px,%@px\nМаксимални померај: %@px,%@px";
+
+// Settings
+"settings.title" = "Подешавања";
+"settings.done" = "Готово";
+"settings.left_handed" = "Леворук";
+"settings.right_handed" = "Дешњак";
+"settings.show_welcome" = "Прикажи водич добродошлице";
+"settings.auto_hide" = "Аутоматски сакриј интерфејс";
+"settings.hide_help" = "Сакриј помоћ";
+
+// Help View
+"help.title" = "Како користити дугмад";
+"help.central_button" = "Централно дугме";
+"help.central_button_desc" = "Отвара/затвара радијални мени";
+"help.zoom" = "Зум";
+"help.zoom_desc" = "Дуги притисак за континуирани зум\nДвоструки тап за макс/мин зум";
+"help.rotation" = "Ротација";
+"help.rotation_desc" = "Дуги притисак за континуирану ротацију\nДвоструки тап за ротацију од 45°";
+"help.reset" = "Ресетуј";
+"help.reset_desc" = "Враћа слику на почетно стање";
+"help.motion" = "Праћење покрета";
+"help.motion_desc" = "Укључује/искључује праћење покрета телефона";
+"help.settings" = "Подешавања";
+"help.settings_desc" = "Отвара мени подешавања";
+
+// Pro Version
+"pro.title" = "Откључај Про верзију";
+"pro.feature.zoom" = "Зум до 10x";
+"pro.feature.control" = "Прецизна контрола зума";
+"pro.feature.performance" = "Оптимизоване перформансе";
+"pro.feature.support" = "Приоритетна подршка";
+"pro.price" = "Само 2,99 €";
+"pro.purchase" = "Купи Про верзију";
+"pro.restore" = "Обнови куповину";
+"pro.later" = "Можда касније";
+
+// Extreme Zoom
+"extreme.title" = "Екстремни зум";
+"extreme.feature.zoom" = "Сви нивои зума (до 20x)";
+"extreme.feature.pro" = "Укључује све Про функције";
+"extreme.feature.levels" = "Додатни нивои: 15x и 20x";
+"extreme.feature.advanced" = "За напредне кориснике";
+"extreme.price" = "Само 0,99 €";
+"extreme.purchase" = "Купи Екстремни зум";
+"extreme.restore" = "Обнови куповину";
+"extreme.later" = "Можда касније";
+
+// Store Errors
+"store.error.not_found" = "Про верзија није доступна за куповину.";
+"store.error.cancelled" = "Куповина је отказана.";
+"store.error.pending" = "Куповина је на чекању.";
+"store.error.verification" = "Грешка при верификацији куповине.";
+"store.error.unknown" = "Дошло је до непознате грешке."; 

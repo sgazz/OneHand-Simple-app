@@ -1,0 +1,79 @@
+// Welcome Guide
+"welcome.title" = "OneHand Simple App";
+"welcome.section1.title" = "Primeros pasos";
+"welcome.section1.content" = "Inteligente, simple y diseñado para adaptarse a tu forma única de interactuar con tu dispositivo";
+"welcome.section2.title" = "Funciones básicas";
+"welcome.section2.content" = "Elige cómo quieres usar tu dispositivo y selecciona una imagen de la galería para comenzar";
+"welcome.section3.title" = "Gestos";
+"welcome.section3.content" = "Ajusta el zoom, rotación e inclinación en el menú radial. Inclina el dispositivo para mover la imagen";
+"welcome.section4.title" = "Consejos";
+"welcome.section4.content" = "Para mejores resultados, mantén el dispositivo estable y usa movimientos pequeños y controlados";
+"welcome.always_show" = "Mostrar siempre esta pantalla";
+"welcome.skip" = "Omitir";
+"welcome.next" = "Siguiente";
+"welcome.got_it" = "Entendido";
+
+// Welcome Screen
+"welcome_screen.title" = "OneHand Simple App";
+"welcome_screen.select_hand" = "Selecciona tu mano dominante";
+"welcome_screen.left_hand" = "Mano izquierda";
+"welcome_screen.right_hand" = "Mano derecha";
+"welcome_screen.choose_image" = "Elegir imagen";
+
+// Image Detail View
+"image_detail.no_image" = "No hay imagen seleccionada";
+"image_detail.size_info" = "Tamaño de imagen: %@\nNivel de zoom: %.1fx\nRotación: %.1f°";
+"image_detail.offset_info" = "Desplazamiento actual: %@px,%@px\nDesplazamiento máximo: %@px,%@px";
+
+// Settings
+"settings.title" = "Ajustes";
+"settings.done" = "Listo";
+"settings.left_handed" = "Zurdo";
+"settings.right_handed" = "Diestro";
+"settings.show_welcome" = "Mostrar guía de bienvenida";
+"settings.auto_hide" = "Ocultar interfaz automáticamente";
+"settings.hide_help" = "Ocultar ayuda";
+
+// Help View
+"help.title" = "Cómo usar los botones";
+"help.central_button" = "Botón central";
+"help.central_button_desc" = "Abre/cierra el menú radial";
+"help.zoom" = "Zoom";
+"help.zoom_desc" = "Mantén pulsado para zoom continuo\nDoble toque para zoom máximo/mínimo";
+"help.rotation" = "Rotación";
+"help.rotation_desc" = "Mantén pulsado para rotación continua\nDoble toque para rotar 45°";
+"help.reset" = "Restablecer";
+"help.reset_desc" = "Restablece la imagen a su estado inicial";
+"help.motion" = "Seguimiento de movimiento";
+"help.motion_desc" = "Activa/desactiva el seguimiento de movimiento del teléfono";
+"help.settings" = "Ajustes";
+"help.settings_desc" = "Abre el menú de ajustes";
+
+// Pro Version
+"pro.title" = "Desbloquear versión Pro";
+"pro.feature.zoom" = "Zoom hasta 10x";
+"pro.feature.control" = "Control preciso del zoom";
+"pro.feature.performance" = "Rendimiento optimizado";
+"pro.feature.support" = "Soporte prioritario";
+"pro.price" = "Solo $2.99";
+"pro.purchase" = "Comprar versión Pro";
+"pro.restore" = "Restaurar compra";
+"pro.later" = "Quizás más tarde";
+
+// Extreme Zoom
+"extreme.title" = "Zoom extremo";
+"extreme.feature.zoom" = "Todos los niveles de zoom (hasta 20x)";
+"extreme.feature.pro" = "Incluye todas las funciones Pro";
+"extreme.feature.levels" = "Niveles adicionales: 15x y 20x";
+"extreme.feature.advanced" = "Para usuarios avanzados";
+"extreme.price" = "Solo $0.99";
+"extreme.purchase" = "Comprar Zoom extremo";
+"extreme.restore" = "Restaurar compra";
+"extreme.later" = "Quizás más tarde";
+
+// Store Errors
+"store.error.not_found" = "La versión Pro no está disponible para comprar.";
+"store.error.cancelled" = "La compra fue cancelada.";
+"store.error.pending" = "La compra está pendiente.";
+"store.error.verification" = "Error al verificar la compra.";
+"store.error.unknown" = "Ocurrió un error desconocido."; 
